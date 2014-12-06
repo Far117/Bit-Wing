@@ -819,9 +819,9 @@ private:
         bg1.openFromFile("bin/Rolemusic_-_05_-_Death_on_the_battlefield.ogg");
         bg2.openFromFile("bin/Rolemusic_-_Savage_Steel_Fun_Club.ogg");
         bg3.openFromFile("bin/Skip_-_03_-_Planet_Cruizer.ogg");
-        bg4.openFromFile("bin/Azureflux_-_01_-_Final_Sector.wav");
-        bg5.openFromFile("bin/Azureflux_-_03_-_Superbyte.wav");
-        bg6.openFromFile("bin/Azureflux_-_05_-_Expedition.wav");
+        bg4.openFromFile("bin/Azureflux_-_01_-_Final_Sector.ogg");
+        bg5.openFromFile("bin/Azureflux_-_03_-_Superbyte.ogg");
+        bg6.openFromFile("bin/Azureflux_-_05_-_Expedition.ogg");
 
 
 
@@ -1065,6 +1065,7 @@ private:
                 }
             } else if(level>=7 && rand() % 20==0 && spawnsLeft>=9){ //fleet of 9 cube
                 int lineStart=rand()% (width-(30*4));
+                int positionReset=lineStart;
 
                 int type=rand()%3;
                 if(type==0){
@@ -1079,6 +1080,7 @@ private:
                         lineStart+=45;
                         spawnsLeft--;
                     }
+                    lineStart=positionReset;
                 }
 
             } else if(enemies.size()<(level*level+(rand() % level*2))-(level/2) && spawnsLeft>0){
