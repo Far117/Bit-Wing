@@ -1,0 +1,11 @@
+Alpha 1:
+    Initial (hopefully) bug-free release.
+    Basic ship sprite
+    Basic enemy sprite
+    Explosions
+    Fleets
+    Levels
+    Enemy AI:
+        Weaver
+        Charger
+        Strafer

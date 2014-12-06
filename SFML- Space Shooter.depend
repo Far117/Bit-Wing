@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1417831868 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
+	<iostream>
+	<cstdlib>
+	<ctime>
+	<vector>
+	<sstream>
+	<SFML/Window.hpp>
+	<SFML/Graphics.hpp>
+	<SFML/System.hpp>
+	<SFML/Audio.hpp>
+
