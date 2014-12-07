@@ -28,6 +28,32 @@ float randomFloat(float a, float b){
     return a+r;
 }
 
+char randomLetter(){
+    char c='A'+rand() % 24;
+    return c;
+}
+
+string randomSector(){
+    stringstream s;
+    s << "Sector ";
+    s << randomLetter() << randomLetter() << randomLetter();
+    s << "-";
+    s << rand()%10000;
+    return s.str();
+}
+
+class TextEntity{
+    Font font;
+    Text text;
+
+    int textSize;
+
+    TextEntity(float x, float y, int charSize){
+
+    }
+
+};
+
 class Star{
 public:
     float x,y;
@@ -266,6 +292,8 @@ public:
     float bounds;
     bool noSprite;
     bool kill;
+    bool flameGrow;
+    int flameAnimationTimer;
 
     enum direction{LEFT, RIGHT};
     enum availableAI{CHARGER, WEAVER, STRAFER};
@@ -281,10 +309,12 @@ public:
     RectangleShape leftThrust;
     RectangleShape cockpit;
 
-    enum partNames{BODY=0,RIGHTWING=1, LEFTWING=2, RIGHTTHRUST=3, LEFTTHRUST=4, COCKPIT=5};
+    enum partNames{BODY=0,RIGHTWING=1, LEFTWING=2};
+    enum accessoryNames{RIGHTTHRUST=0, LEFTTHRUST=1, COCKPIT=2};
     float outlineSize;
 
     vector<RectangleShape> parts;
+    vector<RectangleShape> accessories;
 
     Enemy(float x2, float y2, int type){
         x=x2;
@@ -295,6 +325,8 @@ public:
         kill=false;
 
         noSprite=false;
+        flameGrow=false;
+        flameAnimationTimer=10;
 
         outlineSize=2;
 
@@ -347,11 +379,19 @@ public:
             rightThrust.setOutlineColor(Color(0,19,127));
             rightThrust.setOutlineThickness(outlineSize);
 
+            cockpit.setFillColor(Color(64,64,64));
+            cockpit.setOutlineColor(Color(0,0,0));
+            cockpit.setOutlineThickness(outlineSize);
+            cockpit.setSize(Vector2f(bounds-outlineSize*4,bounds/4));
+            cockpit.setPosition(body.getPosition().x+bounds/15,
+                                body.getPosition().y-bounds/20);
+
             parts.push_back(body);
             parts.push_back(rightWing);
             parts.push_back(leftWing);
-            parts.push_back(leftThrust);
-            parts.push_back(rightThrust);
+            accessories.push_back(leftThrust);
+            accessories.push_back(rightThrust);
+            accessories.push_back(cockpit);
         }
 
         if(ai==WEAVER || ai==STRAFER){
@@ -419,11 +459,16 @@ public:
     }
 
     void draw(RenderWindow &window){
+        animate();
+
         if(noSprite){
             window.draw(placeHolder);
         } else {
             for(int x=0;x<parts.size();x++){
                 window.draw(parts[x]);
+            }
+            for(int x=0;x<accessories.size();x++){
+                window.draw(accessories[x]);
             }
         }
     }
@@ -441,10 +486,35 @@ public:
                                  parts[BODY].getPosition().y-(bounds/3));
         parts[RIGHTWING].setPosition(parts[BODY].getPosition().x+parts[BODY].getGlobalBounds().width,
                                  parts[BODY].getPosition().y-(bounds/3));
-        parts[LEFTTHRUST].setPosition(parts[LEFTWING].getPosition().x-outlineSize,
-                                      parts[LEFTWING].getPosition().y-parts[LEFTTHRUST].getGlobalBounds().height);
-        parts[RIGHTTHRUST].setPosition(parts[RIGHTWING].getPosition().x-outlineSize,
-                                       parts[RIGHTWING].getPosition().y-parts[RIGHTTHRUST].getGlobalBounds().height);
+        accessories[LEFTTHRUST].setPosition(parts[LEFTWING].getPosition().x-outlineSize,
+                                      parts[LEFTWING].getPosition().y-accessories[LEFTTHRUST].getGlobalBounds().height);
+        accessories[RIGHTTHRUST].setPosition(parts[RIGHTWING].getPosition().x-outlineSize,
+                                       parts[RIGHTWING].getPosition().y-accessories[RIGHTTHRUST].getGlobalBounds().height);
+        accessories[COCKPIT].setPosition(parts[BODY].getPosition().x+bounds/6,
+                                parts[BODY].getPosition().y+bounds/3);
+    }
+
+    void animate(){
+        flameAnimationTimer--;
+
+        if(flameAnimationTimer<=0){
+            flameGrow=!flameGrow;
+            flameAnimationTimer=10;
+        }
+
+        if(flameGrow){
+            accessories[RIGHTTHRUST].setSize(Vector2f(accessories[RIGHTTHRUST].getSize().x,
+                                                      accessories[RIGHTTHRUST].getSize().y+.2));
+            accessories[LEFTTHRUST].setSize(Vector2f(accessories[LEFTTHRUST].getSize().x,
+                                                     accessories[LEFTTHRUST].getSize().y+.2));
+        } else {
+            accessories[RIGHTTHRUST].setSize(Vector2f(accessories[RIGHTTHRUST].getSize().x,
+                                                      accessories[RIGHTTHRUST].getSize().y-.2));
+            accessories[LEFTTHRUST].setSize(Vector2f(accessories[LEFTTHRUST].getSize().x,
+                                                     accessories[LEFTTHRUST].getSize().y-.2));
+        }
+
+        syncParts();
     }
 };
 
@@ -462,6 +532,10 @@ public:
     bool canFire;
     int lives;
     int score;
+    bool flameGrow;
+    int flameAnimationTimer;
+
+    int money;
 
     RectangleShape placeHolder;
 
@@ -470,11 +544,18 @@ public:
     RectangleShape leftWing;
     RectangleShape rightThrust;
     RectangleShape leftThrust;
-    RectangleShape cockPit;
+    RectangleShape cockpit;
 
-    enum partNames{BODY=0,RIGHTWING=1,LEFTWING=2,RIGHTTHRUST=3,LEFTTHRUST=4};
+    RectangleShape topHUD;
+    RectangleShape clearedHUD;
+
+    enum partNames{BODY=0,RIGHTWING=1,LEFTWING=2};
+    enum accessoryNames{RIGHTTHRUST=0,LEFTTHRUST=1, COCKPIT=2};
+    enum hudNames{TOPHUD=0, CLEAREDHUD=1};
 
     vector<RectangleShape> parts;
+    vector<RectangleShape> accessories;
+    vector<RectangleShape> huds;
 
     Player(float x2, float y2){
         x=x2;
@@ -487,6 +568,9 @@ public:
         speed=1;
         lives=3;
         score=0;
+
+        flameAnimationTimer=10;
+        flameGrow=false;
 
         body.setFillColor(Color(0,255,33));
         body.setOutlineColor(Color(0,127,14));
@@ -522,11 +606,34 @@ public:
         rightThrust.setPosition(Vector2f(rightThrust.getPosition().x,
                                         rightThrust.getPosition().y-leftThrust.getGlobalBounds().height));
 
+        cockpit.setFillColor(Color(0,255,255));
+        cockpit.setOutlineColor(Color(0,127,127));
+        cockpit.setOutlineThickness(outline);
+        cockpit.setSize(Vector2f(bounds/2-outline*4,bounds/5));
+        cockpit.setPosition(body.getPosition().x+(bounds/15),body.getPosition().y+(bounds/20));
+
+        topHUD.setFillColor(Color(0,255,255,100));
+        topHUD.setOutlineColor(Color(0,150,150,100));
+        topHUD.setOutlineThickness(outline);
+        topHUD.setSize(Vector2f(width-(outline*2),height/8));
+        topHUD.setPosition(outline,outline);
+
+        clearedHUD.setFillColor(Color(0,255,255,100));
+        clearedHUD.setOutlineColor(Color(0,150,150,100));
+        clearedHUD.setOutlineThickness(outline);
+        clearedHUD.setSize(Vector2f(250,25));
+        clearedHUD.setPosition(0,height-clearedHUD.getGlobalBounds().height+(outline*2));
+
         parts.push_back(body);
         parts.push_back(rightWing);
         parts.push_back(leftWing);
-        parts.push_back(rightThrust);
-        parts.push_back(leftThrust);
+
+        accessories.push_back(rightThrust);
+        accessories.push_back(leftThrust);
+        accessories.push_back(cockpit);
+
+        huds.push_back(topHUD);
+        huds.push_back(clearedHUD);
 
         //0=body
         //1=rightWing
@@ -585,12 +692,23 @@ public:
     }
 
     void draw(RenderWindow &window){
+        animate();
         if(noSprite){
             window.draw(placeHolder);
         } else {
             for(int x=0;x<parts.size();x++){
                 window.draw(parts[x]);
             }
+
+            for(int x=0;x<accessories.size();x++){
+                window.draw(accessories[x]);
+            }
+        }
+    }
+
+    void drawHuds(RenderWindow &window){
+        for(int x=0;x<huds.size();x++){
+            window.draw(huds[x]);
         }
     }
 
@@ -608,10 +726,35 @@ public:
                                        parts[BODY].getPosition().y+(bounds/2)));
         parts[LEFTWING].setPosition(Vector2f(parts[BODY].getPosition().x-parts[LEFTWING].getGlobalBounds().width,
                                       parts[BODY].getPosition().y+(bounds/2)));
-        parts[LEFTTHRUST].setPosition(Vector2f(parts[LEFTWING].getPosition().x,
+        accessories[LEFTTHRUST].setPosition(Vector2f(parts[LEFTWING].getPosition().x,
                                         parts[LEFTWING].getPosition().y+parts[LEFTWING].getGlobalBounds().height));
-        parts[RIGHTTHRUST].setPosition(Vector2f(parts[RIGHTWING].getPosition().x,
+        accessories[RIGHTTHRUST].setPosition(Vector2f(parts[RIGHTWING].getPosition().x,
                                         parts[RIGHTWING].getPosition().y+parts[LEFTWING].getGlobalBounds().height));
+        accessories[COCKPIT].setPosition(parts[BODY].getPosition().x+(bounds/15),
+                                         parts[BODY].getPosition().y+(bounds/20));
+    }
+
+    void animate(){
+        flameAnimationTimer--;
+
+        if(flameAnimationTimer<=0){
+            flameGrow=!flameGrow;
+            flameAnimationTimer=10;
+        }
+
+        if(flameGrow){
+            accessories[RIGHTTHRUST].setSize(Vector2f(accessories[RIGHTTHRUST].getSize().x,
+                                                      accessories[RIGHTTHRUST].getSize().y+.2));
+            accessories[LEFTTHRUST].setSize(Vector2f(accessories[LEFTTHRUST].getSize().x,
+                                                     accessories[LEFTTHRUST].getSize().y+.2));
+        } else {
+            accessories[RIGHTTHRUST].setSize(Vector2f(accessories[RIGHTTHRUST].getSize().x,
+                                                      accessories[RIGHTTHRUST].getSize().y-.2));
+            accessories[LEFTTHRUST].setSize(Vector2f(accessories[LEFTTHRUST].getSize().x,
+                                                     accessories[LEFTTHRUST].getSize().y-.2));
+        }
+
+        syncParts();
     }
 };
 
@@ -631,6 +774,11 @@ public:
     Text lives;
     Text levelCounter;
     Text enemyCounter;
+    Text sectorCounter;
+    Text quit;
+    int quitTimer;
+
+    string sectorName;
 
     SoundBuffer goodLaserBuffer;
     SoundBuffer badLaserBuffer;
@@ -658,6 +806,7 @@ public:
     int enemiesLeft;
     int spawnsLeft;
     int levelSplashTime;
+    bool replay;
 
     Time time;
     Int32 updateTime;
@@ -723,11 +872,18 @@ private:
     void processEvents(){
         Event event;
         while (window.pollEvent(event)){
-            if (event.type == Event::Closed)
+            if (event.type == Event::Closed){
+                replay=false;
                 window.close();
-            else
-            if ((event.type == Event::KeyPressed) && (gameState == INTRO))
+            } else if ((event.type == Event::KeyPressed) && (gameState == INTRO)){
                 gameState=PLAYING;
+            } else if(gameState==GAME_LOST && Keyboard::isKeyPressed(Keyboard::Return)){
+                replay=true;
+                window.close();
+            } else if(gameState==GAME_LOST && Keyboard::isKeyPressed(Keyboard::Escape)){
+                replay=false;
+                window.close();
+            }
         }
     }
 
@@ -775,13 +931,21 @@ private:
         font.loadFromFile("bin/LCD_Solid.ttf");
         levelSplash.setFont(font);
         levelSplash.setColor(Color::White);
-        levelSplash.setCharacterSize(72);
+        levelSplash.setCharacterSize(50);
 
         lost.setFont(font);
         lost.setColor(Color::White);
         lost.setCharacterSize(100);
         lost.setString("Game Over");
         lost.setPosition(Vector2f(width/2-lost.getGlobalBounds().width/2,height/2-lost.getGlobalBounds().height/2));
+
+        quit.setFont(font);
+        quit.setColor(Color::Red);
+        quit.setCharacterSize(20);
+        quit.setString("Press Enter to Restart\nPress Escape to Quit...");
+        quit.setPosition(width/2-quit.getGlobalBounds().width/2,height-quit.getGlobalBounds().height);
+        quitTimer=180;
+        replay=false;
 
         score.setFont(font);
         score.setColor(Color::Yellow);
@@ -798,13 +962,20 @@ private:
         levelCounter.setFont(font);
         levelCounter.setColor(Color::Red);
         levelCounter.setCharacterSize(20);
-        levelCounter.setString("Level: 1");
+        sectorName=randomSector();
+        levelCounter.setString(sectorName.c_str());
         levelCounter.setPosition(width/2-levelCounter.getGlobalBounds().width/2,levelCounter.getGlobalBounds().height);
+
+        sectorCounter.setFont(font);
+        sectorCounter.setColor(Color::Red);
+        sectorCounter.setCharacterSize(20);
+        sectorCounter.setString("Sectors Cleared: ");
+        sectorCounter.setPosition(0,height-(sectorCounter.getGlobalBounds().height));
 
         enemyCounter.setFont(font);
         enemyCounter.setColor(Color::Red);
         enemyCounter.setCharacterSize(20);
-        enemyCounter.setString("Enemies In Wave: 0");
+        enemyCounter.setString("Enemies In Sector: 0");
         enemyCounter.setPosition(width/2-enemyCounter.getGlobalBounds().width/2,levelCounter.getGlobalBounds().height*2.5);
 
         explosionBuffer.loadFromFile("bin/164855__dayofdagon__bit-bomber2.ogg");
@@ -862,6 +1033,8 @@ private:
             explosions[x].draw(window);
         }
 
+        player[0].drawHuds(window);
+
         if(gameState==LEVEL){
             window.draw(levelSplash);
         }
@@ -872,17 +1045,18 @@ private:
 
         if(gameState==PLAYING){
             stringstream s;
-            s << "Level: " << level;
-            levelCounter.setString(s.str());
+            //s << "Level: " << level;
+            levelCounter.setString(sectorName.c_str());
 
-            s.str("");
-            s.clear();
+            //s.str("");
+            //s.clear();
 
-            s << "Enemies In Wave: " << enemiesLeft;
+            s << "Enemies In Sector: " << enemiesLeft;
             enemyCounter.setString(s.str());
 
             window.draw(levelCounter);
             window.draw(enemyCounter);
+            window.draw(sectorCounter);
         }
 
         stringstream s;
@@ -895,6 +1069,12 @@ private:
         s << "Lives: " << player[0].lives;
         lives.setString(s.str());
         window.draw(lives);
+
+        if(gameState==GAME_LOST && quitTimer>0){
+            quitTimer--;
+        } else if (gameState==GAME_LOST && quitTimer<=0){
+            window.draw(quit);
+        }
 
         window.display();
     }
@@ -1101,13 +1281,19 @@ private:
 
     void level_up(){
         level++;
+        sectorName=randomSector();
         stringstream s;
-        s.str("");
-        s.clear();
-        s << "Level: " << level;
+
+        s << "Entering " << sectorName;
         levelSplash.setString(s.str());
         levelSplash.setPosition(Vector2f(width/2-levelSplash.getGlobalBounds().width/2,
                                     height/2-levelSplash.getGlobalBounds().height/2));
+
+        s.str("");
+        s.clear();
+
+        s << "Sectors Cleared: " << level-1;
+        sectorCounter.setString(s.str());
 
         enemiesLeft=level*5+(level*level/2);
         spawnsLeft=enemiesLeft;
@@ -1202,16 +1388,35 @@ private:
             }
         }
     }
+
+    /*
+    bool shouldReplay(){
+        while(true){
+            if(Keyboard::isKeyPressed(Keyboard::Enter)){
+                return true;
+            }else if(Keyboard::isKeyPressed(Keyboard::Escape)){
+                return false;
+            }
+        }
+    }
+    */
 };
 
 int main(){
     srand(time(NULL));
+    bool replay=true;
 
-    Game game;
+    while(replay){
+        Game game;
+        if(!game.init()){
+            return EXIT_FAILURE;
+        }
 
-    if(!game.init()){
-        return EXIT_FAILURE;
+        game.exec();
+
+        replay=game.replay;
     }
 
-    return game.exec();
+
+    //return game.exec();
 }

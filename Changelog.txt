@@ -1,3 +1,15 @@
+Alpha 2:
+    Animations:
+        Thrust
+    Changed levels to sectors
+    Added restart and quit options when game ends
+    Updated HUD
+
+===============================================
+Alpha 1.1:
+    Removed ~50mb of bloat
+    Added exe icon
+
 Alpha 1:
     Initial (hopefully) bug-free release.
     Basic ship sprite

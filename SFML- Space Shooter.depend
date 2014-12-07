@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1417887096 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
+1417971409 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
 	<iostream>
 	<cstdlib>
 	<ctime>
@@ -10,5 +10,5 @@
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 
-1417886215 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\bin\resources.rc
+1417909963 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\bin\resources.rc
 
