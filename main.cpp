@@ -3,6 +3,7 @@
 #include <ctime>
 #include <vector>
 #include <sstream>
+#include <memory>
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -52,6 +53,45 @@ class TextEntity{
 
     }
 
+};
+
+class SpriteEntity{
+public:
+
+    Texture texture;
+    Sprite sprite;
+    RectangleShape collision;
+
+    SpriteEntity(){};
+
+    void init(float x, float y, string graphic){
+        texture.loadFromFile(graphic.c_str());
+        sprite.setTexture(texture);
+
+        sprite.setPosition(x,y);
+        collision.setSize(Vector2f(sprite.getGlobalBounds().width,
+                                   sprite.getGlobalBounds().height));
+        collision.setPosition(sprite.getPosition().x,sprite.getPosition().y);
+    }
+
+    void draw(RenderWindow &window){
+        window.draw(sprite);
+    }
+
+    void travel(float x, float y){
+        sprite.move(x,y);
+        collision.move(x,y);
+    }
+
+    void warp(float x, float y){
+        sprite.setPosition(x,y);
+        collision.setPosition(x,y);
+    }
+
+    void rescale(float x, float y){
+        sprite.setScale(x,y);
+        collision.setScale(x,y);
+    }
 };
 
 class Star{
@@ -666,7 +706,7 @@ public:
             }
 
             if((Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::D)) &&
-                    parts[LEFTWING].getPosition().y+parts[LEFTWING].getGlobalBounds().height<height){
+                    accessories[LEFTTHRUST].getPosition().y+accessories[LEFTTHRUST].getGlobalBounds().height<height){
                 y2=speed;
             }
             if((Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
@@ -716,7 +756,8 @@ public:
         if(noSprite){
             placeHolder.setPosition(width/2-placeHolder.getGlobalBounds().width, height-placeHolder.getGlobalBounds().height);
         } else {
-            parts[BODY].setPosition(width/2-parts[BODY].getGlobalBounds().width, height-parts[BODY].getGlobalBounds().height);
+            parts[BODY].setPosition(width/2-parts[BODY].getGlobalBounds().width,
+                                    height-parts[BODY].getGlobalBounds().height-(bounds));
             syncParts();
         }
     }
@@ -808,6 +849,10 @@ public:
     int levelSplashTime;
     bool replay;
 
+    bool destroyTitle;
+    int titleDestructionTimer;
+    int titleAnimationTimer;
+
     Time time;
     Int32 updateTime;
 
@@ -819,6 +864,9 @@ public:
     vector<Player> player;
     vector<Star> stars;
     vector<Explosion> explosions;
+
+    //shared_ptr<SpriteEntity> title;
+    SpriteEntity title;
 
     Game(){}
 
@@ -875,8 +923,6 @@ private:
             if (event.type == Event::Closed){
                 replay=false;
                 window.close();
-            } else if ((event.type == Event::KeyPressed) && (gameState == INTRO)){
-                gameState=PLAYING;
             } else if(gameState==GAME_LOST && Keyboard::isKeyPressed(Keyboard::Return)){
                 replay=true;
                 window.close();
@@ -888,7 +934,14 @@ private:
     }
 
     void update(){
-        if(gameState!=PLAYING && gameState!=LEVEL){
+        if(destroyTitle){
+            titleDestructionSequence();
+        }
+
+        if(gameState==INTRO){
+            titleAnimation();
+        }
+        if(gameState!=PLAYING && gameState!=LEVEL && gameState!=INTRO){
             return;
         }
 
@@ -996,6 +1049,8 @@ private:
 
 
 
+
+
         SONGS=6;
         lastPlayedSong=rand() % SONGS;
 
@@ -1005,11 +1060,19 @@ private:
         }
 
         level=0;
-        enemiesLeft=0;
+        enemiesLeft=1;
         spawnsLeft=0;
 
-        level_up();
-        gameState=LEVEL;
+        destroyTitle=false;
+        //titleAnimationTimer=50;
+        titleDestructionTimer=6000;
+
+        title.init(0,0,"bin/logo.png");
+        title.rescale(2.5,2.5);
+        title.warp(width/2-title.sprite.getGlobalBounds().width/2,-title.sprite.getGlobalBounds().height);
+
+        //level_up();
+        gameState=INTRO;
     }
 
     void display(){
@@ -1033,7 +1096,13 @@ private:
             explosions[x].draw(window);
         }
 
-        player[0].drawHuds(window);
+        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST){
+            player[0].drawHuds(window);
+        }
+
+        if(gameState==INTRO){
+            title.draw(window);
+        }
 
         if(gameState==LEVEL){
             window.draw(levelSplash);
@@ -1059,16 +1128,18 @@ private:
             window.draw(sectorCounter);
         }
 
-        stringstream s;
-        s << "Score: " << player[0].score;
-        score.setString(s.str());
-        window.draw(score);
+        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST){
+            stringstream s;
+            s << "Score: " << player[0].score;
+            score.setString(s.str());
+            window.draw(score);
 
-        s.str("");
-        s.clear();
-        s << "Lives: " << player[0].lives;
-        lives.setString(s.str());
-        window.draw(lives);
+            s.str("");
+            s.clear();
+            s << "Lives: " << player[0].lives;
+            lives.setString(s.str());
+            window.draw(lives);
+        }
 
         if(gameState==GAME_LOST && quitTimer>0){
             quitTimer--;
@@ -1082,6 +1153,71 @@ private:
     void checkCollisions(){
         //missile with players/enemies
         //enemies with player
+
+        if(gameState==INTRO){
+            for(int x=0;x<missiles.size();x++){
+                if(intersects(missiles[x].placeHolder,title.collision)){
+                    if(rand() % 10==0){
+                            destroyTitle=true;
+                    }
+                    explosions.push_back(Explosion(missiles[x].placeHolder.getPosition().x,
+                                                   missiles[x].placeHolder.getPosition().y));
+                    missiles.erase(missiles.begin()+x);
+                }
+            }
+        }
+
+        /*
+        for(int y=0;y<missiles.size();y++){
+            if(missiles[y].hostile){
+                for(int x=0;x<player[0].parts.size();x++){
+                    if(intersects(player[0].parts[x],missiles[y].placeHolder)){
+                            explosions.push_back(Explosion(player[0].parts[0].getPosition().x,
+                                                            player[0].parts[0].getPosition().y));
+                            player[0].lives--;
+                            player[0].resetPosition();
+
+                            missiles.erase(missiles.begin()+y);
+                            explosion.play();
+                        }
+                }
+            } else {
+                for(int x=0;x<enemies.size();x++){
+                    for(int z=0;z<enemies[y].parts.size();z++){
+                        if(intersects(missiles[y].placeHolder,enemies[x].parts[z])){
+                            explosions.push_back(Explosion(enemies[x].parts[0].getPosition().x,
+                                                           enemies[x].parts[0].getPosition().y));
+                            missiles.erase(missiles.begin()+y);
+                            enemies.erase(enemies.begin()+x);
+                            enemiesLeft--;
+                            player[0].score+=100;
+                            explosion.play();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        for(int x=0;x<enemies.size();x++){
+            for(int y=0;y<player[0].parts.size();y++){
+                for(int z=0;z<enemies[x].parts.size();z++){
+                    if(intersects(player[0].parts[y],enemies[x].parts[z])){
+                        explosions.push_back(Explosion(player[0].parts[0].getPosition().x,
+                                                                player[0].parts[0].getPosition().y));
+                        player[0].lives--;
+                        player[0].resetPosition();
+                        //enemies[x].kill=true;
+                        enemies.erase(enemies.begin()+x);
+                        enemiesLeft--;
+                        explosion.play();
+                        break;
+                    }
+                }
+            }
+        }
+
+        */
 
         for(int x=0;x<missiles.size();x++){
             if(player[0].noSprite){
@@ -1187,6 +1323,8 @@ private:
                 }
             }
         }
+
+
 
         if(player[0].lives<=0){
             gameState=GAME_LOST;
@@ -1332,6 +1470,13 @@ private:
 
     void checkMusic(){
         bool newSong=false;
+
+        if(gameState==INTRO){
+            if(introBG.getStatus()==Sound::Stopped){
+                introBG.play();
+            }
+            return;
+        }
         if(lastPlayedSong==0){
             if(bg1.getStatus()==Sound::Stopped){
                 newSong=true;
@@ -1400,6 +1545,51 @@ private:
         }
     }
     */
+
+    void titleDestructionSequence(){
+        title.travel(randomFloat(-1,1),randomFloat(-1,1));
+        titleDestructionTimer--;
+
+        if(introBG.getVolume()>0.3){
+            introBG.setVolume(introBG.getVolume()-0.03);
+        }
+
+        if(rand() % 300==0){
+            float minX=title.sprite.getPosition().x;
+            float maxX=minX+title.sprite.getGlobalBounds().width;
+
+            float minY=title.sprite.getPosition().y;
+            float maxY=minY+title.sprite.getGlobalBounds().height;
+
+            explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
+            explosion.play();
+        }
+
+        if(titleDestructionTimer<=0){
+            float minX=title.sprite.getPosition().x;
+            float maxX=minX+title.sprite.getGlobalBounds().width;
+
+            float minY=title.sprite.getPosition().y;
+            float maxY=minY+title.sprite.getGlobalBounds().height;
+            for(int x=0;x<(rand() % 3) + 3;x++){
+                explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
+                explosion.play();
+            }
+
+            destroyTitle=false;
+            gameState=LEVEL;
+            introBG.stop();
+            level_up();
+        }
+    }
+
+    void titleAnimation(){
+
+        if((title.sprite.getPosition().y+
+            title.sprite.getGlobalBounds().height/2)<=height/2){
+            title.travel(0,.1);
+        }
+    }
 };
 
 int main(){
