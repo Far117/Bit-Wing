@@ -62,8 +62,8 @@ public:
         window.draw(graphic);
     }
 
-    void travel(Vector2f dir){
-        graphic.move(dir.x,dir.y);
+    void travel(Vector2f dir, Time &time){
+        graphic.move(dir.x*time.asSeconds()*60,dir.y*time.asSeconds()*60);
     }
 };
 

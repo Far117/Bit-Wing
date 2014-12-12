@@ -53,21 +53,27 @@
 		<Unit filename="bin/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
+		<Unit filename="include/Asteroid.h" />
 		<Unit filename="include/Enemy.h" />
 		<Unit filename="include/Explosion.h" />
+		<Unit filename="include/Game.h" />
 		<Unit filename="include/Missile.h" />
 		<Unit filename="include/Player.h" />
 		<Unit filename="include/Smoke.h" />
 		<Unit filename="include/SpriteEntity.h" />
 		<Unit filename="include/Star.h" />
+		<Unit filename="include/TextEntity.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="src/Asteroid.cpp" />
 		<Unit filename="src/Enemy.cpp" />
 		<Unit filename="src/Explosion.cpp" />
+		<Unit filename="src/Game.cpp" />
 		<Unit filename="src/Missile.cpp" />
 		<Unit filename="src/Player.cpp" />
 		<Unit filename="src/Smoke.cpp" />
 		<Unit filename="src/SpriteEntity.cpp" />
 		<Unit filename="src/Star.cpp" />
+		<Unit filename="src/TextEntity.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

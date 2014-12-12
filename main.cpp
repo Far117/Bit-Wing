@@ -15,8 +15,8 @@
 
 using namespace std;
 using namespace sf;
-
-const int width=800, height=640;
+//const int width=VideoMode::getDesktopMode().width;
+const int width=VideoMode::getDesktopMode().width, height=VideoMode::getDesktopMode().height;
 const bool keyboardControl=true;
 
 bool intersects (const RectangleShape &rect1,const RectangleShape &rect2){

@@ -106,8 +106,8 @@ public:
 
     bool init(){
         VideoMode videoMode(width, height);
-        window.create(videoMode, "Bit Wing");
-        window.setVerticalSyncEnabled(true);
+        window.create(videoMode, "Bit Wing", Style::Fullscreen);
+        //window.setVerticalSyncEnabled(true);
         window.setFramerateLimit(FRAMES_PER_SECOND);
 
         setup();
@@ -160,7 +160,7 @@ private:
             } else if(gameState==GAME_LOST && Keyboard::isKeyPressed(Keyboard::Return)){
                 replay=true;
                 window.close();
-            } else if(gameState==GAME_LOST && Keyboard::isKeyPressed(Keyboard::Escape)){
+            } else if(Keyboard::isKeyPressed(Keyboard::Escape)){
                 replay=false;
                 window.close();
             }
@@ -180,7 +180,7 @@ private:
         }
 
         for(int x=0;x<missiles.size();x++){
-            missiles[x].travel();
+            missiles[x].travel(time);
         }
 
         for(int x=0;x<missiles.size();x++){
@@ -190,14 +190,14 @@ private:
         }
 
         for(int x=0;x<stars.size();x++){
-            stars[x].travel();
+            stars[x].travel(time);
         }
 
-        player[0].strafe(window);
+        player[0].strafe(window, time);
         checkFire();
 
         for(int x=0;x<enemies.size();x++){
-            enemies[x].logic();
+            enemies[x].logic(time);
         }
 
         if(enemiesLeft<=0){
@@ -327,7 +327,7 @@ private:
         player[0].draw(window);
 
         for(int x=0;x<explosions.size();x++){
-            explosions[x].draw(window);
+            explosions[x].draw(window,time);
         }
 
         if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST){
@@ -397,32 +397,31 @@ private:
                     explosions.push_back(Explosion(missiles[x].placeHolder.getPosition().x,
                                                    missiles[x].placeHolder.getPosition().y));
                     missiles.erase(missiles.begin()+x);
+                    explosion.play();
                 }
             }
         }
 
-        /*
-        for(int y=0;y<missiles.size();y++){
-            if(missiles[y].hostile){
-                for(int x=0;x<player[0].parts.size();x++){
-                    if(intersects(player[0].parts[x],missiles[y].placeHolder)){
-                            explosions.push_back(Explosion(player[0].parts[0].getPosition().x,
-                                                            player[0].parts[0].getPosition().y));
-                            player[0].lives--;
-                            player[0].resetPosition();
-
-                            missiles.erase(missiles.begin()+y);
-                            explosion.play();
-                        }
+        for(int m=0;m<missiles.size();m++){
+            if(missiles[m].hostile){
+                for(int p=0;p<player[0].parts.size();p++){
+                    if(intersects(missiles[m].placeHolder,player[0].parts[p])){
+                        explosions.push_back(Explosion(player[0].parts[p].getPosition().x,
+                                                        player[0].parts[p].getPosition().y));
+                        player[0].lives--;
+                        player[0].resetPosition();
+                        missiles.erase(missiles.begin()+m);
+                        explosion.play();
+                    }
                 }
             } else {
-                for(int x=0;x<enemies.size();x++){
-                    for(int z=0;z<enemies[y].parts.size();z++){
-                        if(intersects(missiles[y].placeHolder,enemies[x].parts[z])){
-                            explosions.push_back(Explosion(enemies[x].parts[0].getPosition().x,
-                                                           enemies[x].parts[0].getPosition().y));
-                            missiles.erase(missiles.begin()+y);
-                            enemies.erase(enemies.begin()+x);
+                for(int e=0;e<enemies.size();e++){
+                    for(int p=0;p<enemies[e].parts.size();p++){
+                        if(intersects(missiles[m].placeHolder,enemies[e].parts[p])){
+                            explosions.push_back(Explosion(enemies[e].parts[p].getPosition().x,
+                                                           enemies[e].parts[p].getPosition().y));
+                            missiles.erase(missiles.begin()+m);
+                            enemies.erase(enemies.begin()+e);
                             enemiesLeft--;
                             player[0].score+=100;
                             explosion.play();
@@ -433,16 +432,18 @@ private:
             }
         }
 
-        for(int x=0;x<enemies.size();x++){
-            for(int y=0;y<player[0].parts.size();y++){
-                for(int z=0;z<enemies[x].parts.size();z++){
-                    if(intersects(player[0].parts[y],enemies[x].parts[z])){
-                        explosions.push_back(Explosion(player[0].parts[0].getPosition().x,
-                                                                player[0].parts[0].getPosition().y));
+        for(int e=0;e<enemies.size();e++){
+            for(int ep=0;ep<enemies[e].parts.size();ep++){
+                for(int pp=0;pp<player[0].parts.size();pp++){
+                    if(intersects(enemies[e].parts[ep],player[0].parts[pp])){
+                        explosions.push_back(Explosion(player[0].parts[pp].getPosition().x,
+                                                        player[0].parts[pp].getPosition().y));
+                        explosions.push_back(Explosion(enemies[e].parts[ep].getPosition().x,
+                                                        enemies[e].parts[ep].getPosition().y));
                         player[0].lives--;
                         player[0].resetPosition();
                         //enemies[x].kill=true;
-                        enemies.erase(enemies.begin()+x);
+                        enemies.erase(enemies.begin()+e);
                         enemiesLeft--;
                         explosion.play();
                         break;
@@ -450,9 +451,7 @@ private:
                 }
             }
         }
-
-        */
-
+        /*
         for(int x=0;x<missiles.size();x++){
             if(player[0].noSprite){
                 if(missiles[x].hostile){
@@ -559,7 +558,7 @@ private:
         }
 
 
-
+        */
         if(player[0].lives<=0){
             gameState=GAME_LOST;
         }
@@ -788,7 +787,7 @@ private:
             introBG.setVolume(introBG.getVolume()-0.03);
         }
 
-        if(rand() % 300==0){
+        if(rand() % 200==0){
             float minX=title.sprite.getPosition().x;
             float maxX=minX+title.sprite.getGlobalBounds().width;
 
@@ -805,7 +804,7 @@ private:
 
             float minY=title.sprite.getPosition().y;
             float maxY=minY+title.sprite.getGlobalBounds().height;
-            for(int x=0;x<(rand() % 3) + 3;x++){
+            for(int x=0;x<(rand() % 5) + 5;x++){
                 explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
                 explosion.play();
             }

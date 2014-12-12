@@ -7,6 +7,7 @@
 #include <SFML/Audio.hpp>
 
 #include <cstdlib>
+#include <vector>
 
 using namespace sf;
 using namespace std;
@@ -134,12 +135,12 @@ public:
         }
     }
 
-    void logic(){
+    void logic(Time &time){
         x=parts[BODY].getPosition().x;
         y=parts[BODY].getPosition().y;
 
         if(ai==CHARGER){
-            parts[BODY].move(0,speed);
+            parts[BODY].move(0,speed*time.asSeconds()*60);
         } else if(ai==WEAVER){
             if(rand() % 300==0){
                 if(direction==LEFT){
@@ -158,25 +159,25 @@ public:
             }
 
             if(direction==RIGHT){
-                parts[BODY].move(speed/2,speed);
+                parts[BODY].move(speed/2*time.asSeconds()*60,speed*time.asSeconds()*60);
             }else {
-                parts[BODY].move(-speed/2,speed);
+                parts[BODY].move(-speed/2*time.asSeconds()*60,speed*time.asSeconds()*60);
             }
         } else if(ai=STRAFER){
             if(x<=0){
-                parts[BODY].move(0,speed*50);
+                parts[BODY].move(0,speed*50*time.asSeconds()*60);
                 direction=RIGHT;
             }
 
             if(x>=width-placeHolder.getGlobalBounds().width){
-                parts[BODY].move(0,speed*10);
+                parts[BODY].move(0,speed*10*time.asSeconds()*60);
                 direction=LEFT;
             }
 
             if(direction==LEFT){
-                parts[BODY].move(-speed*2,0);
+                parts[BODY].move(-speed*2*time.asSeconds()*60,0);
             } else if(direction==RIGHT){
-                parts[BODY].move(speed*2,0);
+                parts[BODY].move(speed*2*time.asSeconds()*60,0);
             }
         }
 

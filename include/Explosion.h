@@ -36,10 +36,10 @@ public:
 
     }
 
-    void draw(RenderWindow &window){
+    void draw(RenderWindow &window, Time &time){
         for(int x=0;x<particles.size();x++){
-            particles[x].travel(directions[x]);
-            particles[x].travel(Vector2f(0,3));
+            particles[x].travel(directions[x],time);
+            particles[x].travel(Vector2f(0,3),time);
             particles[x].update();
 
             if(rand()%2==0){
@@ -57,7 +57,7 @@ public:
         }
 
         for(int x=0;x<stillParticles.size();x++){
-            stillParticles[x].travel(Vector2f(0,3));
+            stillParticles[x].travel(Vector2f(0,3),time);
             stillParticles[x].update();
             if(stillParticles[x].bounds<=0){
                 stillParticles.erase(stillParticles.begin()+x);

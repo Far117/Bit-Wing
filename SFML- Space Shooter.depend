@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1418165963 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
+1418173337 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
 	<iostream>
 	<cstdlib>
 	<ctime>
@@ -26,7 +26,7 @@
 1418090568 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\star.cpp
 	"Star.h"
 
-1418090568 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\star.h
+1418343451 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\star.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -35,14 +35,14 @@
 1418090982 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\explosion.cpp
 	"Explosion.h"
 
-1418091043 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\explosion.h
+1418347759 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\explosion.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	"Smoke.h"
 
-1418090982 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\smoke.h
+1418347486 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\smoke.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -54,7 +54,7 @@
 1418091206 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\missile.cpp
 	"Missile.h"
 
-1418091404 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\missile.h
+1418343451 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\missile.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -63,24 +63,25 @@
 1418091404 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\enemy.cpp
 	"Enemy.h"
 
-1418091404 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
+1418347008 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	<cstdlib>
+	<vector>
 
 1418091572 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\player.cpp
 	"Player.h"
 
-1418091626 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
+1418343249 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	<cstdlib>
 
-1418170571 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
+1418347486 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -114,4 +115,10 @@
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
+
+1418170572 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\asteroid.cpp
+	"Asteroid.h"
+
+1418170571 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\textentity.cpp
+	"TextEntity.h"
 

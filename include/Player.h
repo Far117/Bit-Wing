@@ -145,7 +145,7 @@ public:
         }
     }
 
-    void strafe(RenderWindow &window){
+    void strafe(RenderWindow &window, Time &time){
 
         if(noSprite){
             x=placeHolder.getPosition().x;
@@ -176,9 +176,9 @@ public:
                 x2=-speed;
             }
             if(noSprite){
-                placeHolder.move(Vector2f(x2,y2));
+                placeHolder.move(Vector2f(x2*time.asMilliseconds(),y2*time.asMilliseconds()));
             } else {
-                parts[BODY].move(Vector2f(x2,y2));
+                parts[BODY].move(Vector2f(x2*time.asSeconds()*60,y2*time.asSeconds()*60));
                 syncParts();
             }
 

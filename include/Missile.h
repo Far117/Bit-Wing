@@ -51,18 +51,18 @@ public:
         }
     }
 
-    void travel(){
+    void travel(Time &time){
         x=placeHolder.getPosition().x;
         y=placeHolder.getPosition().y;
         if (hostile){
             if(noSprite){
-                placeHolder.move(0,speed);
+                placeHolder.move(0,speed*time.asSeconds()*60);
             } else {
                 y+=speed;
             }
         } else {
             if(noSprite){
-                placeHolder.move(0,-speed);
+                placeHolder.move(0,-speed*time.asSeconds()*60);
             } else {
                 y-=speed;
             }
