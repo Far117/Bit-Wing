@@ -182,12 +182,16 @@ public:
         }
 
         if(y>(height+(rand() % height)+(height/4))){
-            x=(rand() % (int)(width-placeHolder.getGlobalBounds().width))+placeHolder.getGlobalBounds().width;
-            y=0;
-            parts[BODY].setPosition(Vector2f(x,y));
+            resetPosition();
         }
 
         syncParts();
+    }
+
+    void resetPosition(){
+        x=(rand() % (int)(width-bounds*2))+bounds*2;
+        y=0;
+        parts[BODY].setPosition(Vector2f(x,y));
     }
 
     void draw(RenderWindow &window){

@@ -3,6 +3,8 @@ Beta 1:
     Updated Icon
     Rewrote Collision detection (speed boost)
     Updated drawing to be time based(Movement is constant no matter speed of computer)
+    Enemies reset and weapons clear after player death
+    Full screen
 
 Alpha 2:
     Animations:

@@ -35,7 +35,7 @@
 1418090982 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\explosion.cpp
 	"Explosion.h"
 
-1418347759 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\explosion.h
+1418486073 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\explosion.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -63,7 +63,7 @@
 1418091404 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\enemy.cpp
 	"Enemy.h"
 
-1418347008 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
+1418486459 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -74,14 +74,14 @@
 1418091572 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\player.cpp
 	"Player.h"
 
-1418343249 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
+1418349291 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	<cstdlib>
 
-1418347486 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
+1418487095 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>

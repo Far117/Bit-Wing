@@ -33,6 +33,7 @@ public:
     int flameAnimationTimer;
 
     int money;
+    int kills;
 
     RectangleShape placeHolder;
 
@@ -65,6 +66,9 @@ public:
         speed=1;
         lives=3;
         score=0;
+
+        kills=0;
+        money=0;
 
         flameAnimationTimer=10;
         flameGrow=false;

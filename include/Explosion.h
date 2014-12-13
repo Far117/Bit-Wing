@@ -33,7 +33,6 @@ public:
 
     void update(){
 
-
     }
 
     void draw(RenderWindow &window, Time &time){
