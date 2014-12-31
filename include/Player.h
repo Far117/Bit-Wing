@@ -11,8 +11,8 @@
 using namespace sf;
 using namespace std;
 
-extern const int width;
-extern const int height;
+extern int width;
+extern int height;
 extern const bool keyboardControl;
 
 class Player{

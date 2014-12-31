@@ -9,8 +9,8 @@
 using namespace sf;
 using namespace std;
 
-extern const int width;
-extern const int height;
+extern int width;
+extern int height;
 
 class Smoke{
 public:
@@ -24,13 +24,13 @@ public:
 
     RectangleShape graphic;
 
-    Smoke(float x, float y, float area, bool s){
+    Smoke(float x, float y, float area, bool s, Color center, Color outline){
         still=s;
         bounds=area;
 
         graphic.setSize(Vector2f(bounds,bounds));
-        graphic.setFillColor(Color(255,0,0));
-        graphic.setOutlineColor(Color(127,0,0));
+        graphic.setFillColor(center);
+        graphic.setOutlineColor(outline);
         graphic.setOutlineThickness(2);
         graphic.setPosition(Vector2f(x,y));
 

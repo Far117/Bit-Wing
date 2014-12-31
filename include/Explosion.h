@@ -7,15 +7,17 @@
 #include <SFML/Audio.hpp>
 
 #include "Smoke.h"
+#include "Settings.h"
 
 float randomFloat(float, float);
 
 using namespace sf;
 using namespace std;
 
-extern const int width;
-extern const int height;
+extern int width;
+extern int height;
 
+extern Settings setting;
 
 class Explosion{
 public:
@@ -25,17 +27,14 @@ public:
     vector<Vector2f> directions;
 
     Explosion(float x2, float y2){
-        for(int x=0;x<(rand()%10)+3;x++){
-            particles.push_back(Smoke(x2,y2,rand() % 20, false));
+        for(int x=0;x<(rand()%(setting.explosionLevel+1))+setting.explosionLevel;x++){
+            particles.push_back(Smoke(x2,y2,rand() % (int)(setting.explosionLevel*2.2), false,
+                                      Color(255,0,0), Color(127,0,0)));
             directions.push_back(Vector2f(randomFloat(-10.5,10.5),randomFloat(-10.5,10.5)));
         }
     }
 
-    void update(){
-
-    }
-
-    void draw(RenderWindow &window, Time &time){
+    void update(Time &time){
         for(int x=0;x<particles.size();x++){
             particles[x].travel(directions[x],time);
             particles[x].travel(Vector2f(0,3),time);
@@ -46,7 +45,7 @@ public:
                 float newParticleY=particles[x].graphic.getPosition().y;
                 stillParticles.push_back(Smoke(newParticleX, newParticleY,
                                                particles[x].graphic.getGlobalBounds().width,
-                                               true));
+                                               true, Color(255,0,0), Color(127,0,0)));
             }
 
             if(particles[x].bounds<=0){
@@ -63,6 +62,15 @@ public:
             }
         }
 
+        for(int x=0;x<directions.size();x++){
+            directions[x].x/=1.06;
+            directions[x].y+=0.3;
+        }
+
+        return;
+    }
+
+    void draw(RenderWindow &window){
 
         for(int x=0;x<particles.size();x++){
             particles[x].draw(window);

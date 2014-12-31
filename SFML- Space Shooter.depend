@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1418173337 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
+1419118541 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
 	<iostream>
 	<cstdlib>
 	<ctime>
@@ -17,7 +17,7 @@
 1418088571 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\spriteentity.cpp
 	"SpriteEntity.h"
 
-1418088867 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\spriteentity.h
+1419113953 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\spriteentity.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -26,7 +26,7 @@
 1418090568 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\star.cpp
 	"Star.h"
 
-1418343451 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\star.h
+1419113953 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\star.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -35,14 +35,15 @@
 1418090982 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\explosion.cpp
 	"Explosion.h"
 
-1418486073 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\explosion.h
+1419988592 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\explosion.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	"Smoke.h"
+	"Settings.h"
 
-1418347486 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\smoke.h
+1419122764 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\smoke.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -54,7 +55,7 @@
 1418091206 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\missile.cpp
 	"Missile.h"
 
-1418343451 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\missile.h
+1419113954 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\missile.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -63,7 +64,7 @@
 1418091404 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\enemy.cpp
 	"Enemy.h"
 
-1418486459 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
+1419113954 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -74,14 +75,14 @@
 1418091572 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\player.cpp
 	"Player.h"
 
-1418349291 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
+1419113954 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	<cstdlib>
 
-1418487095 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
+1419988602 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -100,6 +101,8 @@
 	"Player.h"
 	"Asteroid.h"
 	"TextEntity.h"
+	"Settings.h"
+	"Store.h"
 
 1418165963 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\game.cpp
 	"Game.h"
@@ -121,4 +124,28 @@
 
 1418170571 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\textentity.cpp
 	"TextEntity.h"
+
+1419114492 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\settings.h
+
+1419118579 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\settings.cpp
+	"Settings.h"
+	<fstream>
+	<vector>
+	<iostream>
+	<sstream>
+
+1419989579 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\store.cpp
+	"Store.h"
+	<SFML/Window.hpp>
+	<SFML/Graphics.hpp>
+	<SFML/System.hpp>
+	<SFML/Audio.hpp>
+	"Player.h"
+
+1419989635 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\store.h
+	<SFML/Window.hpp>
+	<SFML/Graphics.hpp>
+	<SFML/System.hpp>
+	<SFML/Audio.hpp>
+	"Player.h"
 

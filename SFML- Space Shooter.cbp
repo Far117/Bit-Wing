@@ -15,7 +15,7 @@
 					<Add option="-std=c++11" />
 					<Add option="-g" />
 					<Add option="-DSFML_STATIC" />
-					<Add directory="include" />
+					<Add directory="C:/Users/Frank/Dropbox/Programs/C++/SFML- Space Shooter/include" />
 				</Compiler>
 				<Linker>
 					<Add library="C:\SFML-2.1\lib\libsfml-graphics-s-d.a" />
@@ -30,7 +30,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-O3" />
 					<Add option="-std=c++11" />
 					<Add option="-DSFML_STATIC" />
 					<Add directory="include" />
@@ -49,6 +49,7 @@
 			<Add option="-fexceptions" />
 		</Compiler>
 		<Unit filename="Changelog.txt" />
+		<Unit filename="README.txt" />
 		<Unit filename="bin/icon.ico" />
 		<Unit filename="bin/resources.rc">
 			<Option compilerVar="WINDRES" />
@@ -59,9 +60,11 @@
 		<Unit filename="include/Game.h" />
 		<Unit filename="include/Missile.h" />
 		<Unit filename="include/Player.h" />
+		<Unit filename="include/Settings.h" />
 		<Unit filename="include/Smoke.h" />
 		<Unit filename="include/SpriteEntity.h" />
 		<Unit filename="include/Star.h" />
+		<Unit filename="include/Store.h" />
 		<Unit filename="include/TextEntity.h" />
 		<Unit filename="main.cpp" />
 		<Unit filename="src/Asteroid.cpp" />
@@ -70,9 +73,11 @@
 		<Unit filename="src/Game.cpp" />
 		<Unit filename="src/Missile.cpp" />
 		<Unit filename="src/Player.cpp" />
+		<Unit filename="src/Settings.cpp" />
 		<Unit filename="src/Smoke.cpp" />
 		<Unit filename="src/SpriteEntity.cpp" />
 		<Unit filename="src/Star.cpp" />
+		<Unit filename="src/Store.cpp" />
 		<Unit filename="src/TextEntity.cpp" />
 		<Extensions>
 			<code_completion />

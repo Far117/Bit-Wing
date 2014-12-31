@@ -3,7 +3,7 @@ Shoot with space
 Quit with escape
 After death, restart game with enter
 
-
+Start by shooting the Bit Wing Logo
 
 =============================SPOILERS BELOW==============================
 

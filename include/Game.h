@@ -21,12 +21,16 @@
 #include "Player.h"
 #include "Asteroid.h"
 #include "TextEntity.h"
+#include "Settings.h"
+#include "Store.h"
+
 
 
 using namespace std;
 using namespace sf;
 
-extern const int width, height;
+extern int width, height;
+extern Settings setting;
 
 float randomFloat(float, float);
 char randomLetter();
@@ -51,10 +55,15 @@ public:
     Text enemyCounter;
     Text sectorCounter;
     Text quit;
+    Text gotoStore;
     int quitTimer;
 
     Text killCount;
     Text money;
+
+    Store store;
+
+    //Settings setting;
 
     string sectorName;
 
@@ -78,12 +87,13 @@ public:
     vector<Music> backgroundSongs;
     int lastPlayedSong;
 
-    enum states {INTRO, PLAYING, LEVEL, GAME_LOST, STORE};
+    enum states {INTRO, PLAYING, LEVEL, GAME_LOST, STORE, PRESTORE};
     int gameState;
     int level;
     int enemiesLeft;
     int spawnsLeft;
     int levelSplashTime;
+    int storeCounter;
     bool replay;
 
     bool destroyTitle;
@@ -108,8 +118,17 @@ public:
     Game(){}
 
     bool init(){
-        VideoMode videoMode(width, height);
-        window.create(videoMode, "Bit Wing", Style::Fullscreen);
+        if(setting.fullscreen){
+            width=VideoMode::getDesktopMode().width;
+            height=VideoMode::getDesktopMode().height;
+            VideoMode videoMode(width, height);
+            window.create(videoMode, "Bit Wing", Style::Fullscreen);
+        } else {
+            width=800;
+            height=640;
+            VideoMode videoMode(width,height);
+            window.create(videoMode, "Bit Wing");
+        }
         //window.setVerticalSyncEnabled(true);
         window.setFramerateLimit(FRAMES_PER_SECOND);
         window.setMouseCursorVisible(false);
@@ -167,6 +186,8 @@ private:
             } else if(Keyboard::isKeyPressed(Keyboard::Escape)){
                 replay=false;
                 window.close();
+            } else if(gameState==PRESTORE && Keyboard::isKeyPressed(Keyboard::S)){
+                gameState=STORE;
             }
         }
     }
@@ -179,6 +200,12 @@ private:
         if(gameState==INTRO){
             titleAnimation();
         }
+
+        if(enemiesLeft<=0 && gameState==PLAYING){
+            gameState=PRESTORE;
+            //level_up();
+        }
+
         if(gameState!=PLAYING && gameState!=LEVEL && gameState!=INTRO){
             return;
         }
@@ -204,12 +231,8 @@ private:
             enemies[x].logic(time);
         }
 
-        if(enemiesLeft<=0){
-            level_up();
-        }
-
         for(int x=0;x<explosions.size();x++){
-            explosions[x].update();
+            //explosions[x].update();
             if(explosions[x].particles.size()==0 && explosions[x].stillParticles.size()==0){
                 explosions.erase(explosions.begin()+x);
             }
@@ -281,6 +304,12 @@ private:
         killCount.setString("Enemies Killed: 0");
         killCount.setPosition(0,money.getGlobalBounds().height+killCount.getGlobalBounds().height);
 
+        gotoStore.setFont(font);
+        gotoStore.setColor(Color::White);
+        gotoStore.setCharacterSize(24);
+        gotoStore.setString("Press S to go to the store...");
+        gotoStore.setPosition(width-gotoStore.getGlobalBounds().width,height-gotoStore.getGlobalBounds().height);
+
         explosionBuffer.loadFromFile("bin/164855__dayofdagon__bit-bomber2.ogg");
         goodLaserBuffer.loadFromFile("bin/laser.wav");
 
@@ -305,6 +334,7 @@ private:
         lastPlayedSong=rand() % SONGS;
 
         player.push_back(Player(width/2,height/2));
+        store.link(player[0]);
         for(int x=0;x<20;x++){
             stars.push_back(Star());
         }
@@ -322,6 +352,7 @@ private:
         title.warp(width/2-title.sprite.getGlobalBounds().width/2,-title.sprite.getGlobalBounds().height);
 
         //level_up();
+        storeCounter=60*2;
         gameState=INTRO;
     }
 
@@ -343,10 +374,10 @@ private:
         player[0].draw(window);
 
         for(int x=0;x<explosions.size();x++){
-            explosions[x].draw(window,time);
+            explosions[x].draw(window);
         }
 
-        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST){
+        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST || gameState==PRESTORE){
             player[0].drawHuds(window);
         }
 
@@ -389,11 +420,23 @@ private:
             window.draw(killCount);
         }
 
-        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST){
+        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST || gameState==STORE){
             stringstream s;
             s << "Lives: " << player[0].lives;
             lives.setString(s.str());
             window.draw(lives);
+        }
+
+        if(gameState==STORE){
+            store.logic(window);
+            if(store.quit){
+                store.quit=false;
+                level_up();
+            }
+        }
+
+        if(gameState==PRESTORE){
+            window.draw(gotoStore);
         }
 
         if(gameState==GAME_LOST && quitTimer>0){
@@ -415,10 +458,16 @@ private:
                     if(rand() % 10==0){
                             destroyTitle=true;
                     }
-                    explosions.push_back(Explosion(missiles[x].placeHolder.getPosition().x,
-                                                   missiles[x].placeHolder.getPosition().y));
+                    if(setting.explosions){
+                        explosions.push_back(Explosion(missiles[x].placeHolder.getPosition().x,
+                                                       missiles[x].placeHolder.getPosition().y));
+                    }
                     missiles.erase(missiles.begin()+x);
                     explosion.play();
+
+                    if(destroyTitle){
+                        titleDestructionTimer-=75;
+                    }
                 }
             }
         }
@@ -427,8 +476,10 @@ private:
             if(missiles[m].hostile){
                 for(int p=0;p<player[0].parts.size();p++){
                     if(intersects(missiles[m].placeHolder,player[0].parts[p])){
-                        explosions.push_back(Explosion(player[0].parts[p].getPosition().x,
-                                                        player[0].parts[p].getPosition().y));
+                        if(setting.explosions){
+                            explosions.push_back(Explosion(player[0].parts[p].getPosition().x,
+                                                            player[0].parts[p].getPosition().y));
+                        }
                         player[0].lives--;
                         player[0].resetPosition();
                         missiles.erase(missiles.begin()+m);
@@ -450,8 +501,10 @@ private:
                 for(int e=0;e<enemies.size();e++){
                     for(int p=0;p<enemies[e].parts.size();p++){
                         if(intersects(missiles[m].placeHolder,enemies[e].parts[p])){
-                            explosions.push_back(Explosion(enemies[e].parts[p].getPosition().x,
-                                                           enemies[e].parts[p].getPosition().y));
+                            if(setting.explosions){
+                                explosions.push_back(Explosion(enemies[e].parts[p].getPosition().x,
+                                                               enemies[e].parts[p].getPosition().y));
+                            }
                             missiles.erase(missiles.begin()+m);
                             enemies.erase(enemies.begin()+e);
                             enemiesLeft--;
@@ -469,10 +522,12 @@ private:
             for(int ep=0;ep<enemies[e].parts.size();ep++){
                 for(int pp=0;pp<player[0].parts.size();pp++){
                     if(intersects(enemies[e].parts[ep],player[0].parts[pp])){
-                        explosions.push_back(Explosion(player[0].parts[pp].getPosition().x,
-                                                        player[0].parts[pp].getPosition().y));
-                        explosions.push_back(Explosion(enemies[e].parts[ep].getPosition().x,
-                                                        enemies[e].parts[ep].getPosition().y));
+                        if(setting.explosions){
+                            explosions.push_back(Explosion(player[0].parts[pp].getPosition().x,
+                                                            player[0].parts[pp].getPosition().y));
+                            explosions.push_back(Explosion(enemies[e].parts[ep].getPosition().x,
+                                                            enemies[e].parts[ep].getPosition().y));
+                        }
                         player[0].lives--;
                         player[0].resetPosition();
                         //enemies[x].kill=true;
@@ -633,6 +688,20 @@ private:
                 }
             }
         }
+
+        if(gameState==PRESTORE){
+            storeCounter--;
+            if(storeCounter<0){
+                storeCounter=60*2;
+                level_up();
+            }
+        }
+
+        if(gameState==PLAYING || gameState==LEVEL || gameState==INTRO){
+            for(int x=0;x<explosions.size();x++){
+                explosions[x].update(time);
+            }
+        }
     }
 
     void checkMusic(){
@@ -728,7 +797,9 @@ private:
             float minY=title.sprite.getPosition().y;
             float maxY=minY+title.sprite.getGlobalBounds().height;
 
-            explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
+            if(setting.explosions){
+                explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
+            }
             explosion.play();
         }
 
@@ -739,7 +810,9 @@ private:
             float minY=title.sprite.getPosition().y;
             float maxY=minY+title.sprite.getGlobalBounds().height;
             for(int x=0;x<(rand() % 5) + 5;x++){
-                explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
+                if(setting.explosions){
+                    explosions.push_back(Explosion(randomFloat(minX,maxX), randomFloat(minY,maxY)));
+                }
                 explosion.play();
             }
 
@@ -756,10 +829,6 @@ private:
             title.sprite.getGlobalBounds().height/2)<=height/2){
             title.travel(0,.1);
         }
-    }
-
-    void store(){
-
     }
 };
 

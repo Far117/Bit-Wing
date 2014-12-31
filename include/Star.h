@@ -9,8 +9,8 @@
 using namespace sf;
 using namespace std;
 
-extern const int width;
-extern const int height;
+extern int width;
+extern int height;
 
 
 class Star{
