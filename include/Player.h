@@ -7,6 +7,7 @@
 #include <SFML/Audio.hpp>
 
 #include <cstdlib>
+#include <sstream>
 
 using namespace sf;
 using namespace std;
@@ -35,6 +36,8 @@ public:
     int money;
     int kills;
 
+    int dualAmmo;
+
     RectangleShape placeHolder;
 
     RectangleShape body;
@@ -46,16 +49,23 @@ public:
 
     RectangleShape topHUD;
     RectangleShape clearedHUD;
+    RectangleShape weaponHUD;
+
+    //Font font;
+    Text weapon;
 
     enum partNames{BODY=0,RIGHTWING=1,LEFTWING=2};
     enum accessoryNames{RIGHTTHRUST=0,LEFTTHRUST=1, COCKPIT=2};
-    enum hudNames{TOPHUD=0, CLEAREDHUD=1};
+    enum hudNames{TOPHUD=0, CLEAREDHUD=1, WEAPONHUD=2};
+
+    enum weaponChoices{BASICLASER=1, DUALSHOT=2, TRISHOT=3};
+    int currentWeapon;
 
     vector<RectangleShape> parts;
     vector<RectangleShape> accessories;
     vector<RectangleShape> huds;
 
-    Player(float x2, float y2){
+    Player(float x2, float y2, Font &font){
         x=x2;
         y=y2;
         bounds=30;
@@ -72,6 +82,14 @@ public:
 
         flameAnimationTimer=10;
         flameGrow=false;
+
+        dualAmmo=0;
+
+        weapon.setFont(font);
+        weapon.setCharacterSize(20);
+        weapon.setColor(Color::White);
+        weapon.setString("Single Laser: --");
+        weapon.setPosition(width-250,height-weapon.getGlobalBounds().height*1.2);
 
         body.setFillColor(Color(0,255,33));
         body.setOutlineColor(Color(0,127,14));
@@ -125,6 +143,13 @@ public:
         clearedHUD.setSize(Vector2f(250,25));
         clearedHUD.setPosition(0,height-clearedHUD.getGlobalBounds().height+(outline*2));
 
+        weaponHUD.setFillColor(Color(0,255,255,100));
+        weaponHUD.setOutlineColor(Color(0,150,150,100));
+        weaponHUD.setOutlineThickness(outline);
+        weaponHUD.setSize(Vector2f(250,25));
+        weaponHUD.setPosition(width-weaponHUD.getGlobalBounds().width,
+                              height-weaponHUD.getGlobalBounds().height);
+
         parts.push_back(body);
         parts.push_back(rightWing);
         parts.push_back(leftWing);
@@ -135,6 +160,7 @@ public:
 
         huds.push_back(topHUD);
         huds.push_back(clearedHUD);
+        huds.push_back(weaponHUD);
 
         //0=body
         //1=rightWing
@@ -147,9 +173,12 @@ public:
             //placeHolder.setPosition(width/2,height/2);
             placeHolder.setFillColor(Color::Green);
         }
+
+        currentWeapon=BASICLASER;
     }
 
     void strafe(RenderWindow &window, Time &time){
+        weaponSelection();
 
         if(noSprite){
             x=placeHolder.getPosition().x;
@@ -211,6 +240,9 @@ public:
         for(int x=0;x<huds.size();x++){
             window.draw(huds[x]);
         }
+
+        refreshAmmo();
+        window.draw(weapon);
     }
 
     void resetPosition(){
@@ -257,6 +289,27 @@ public:
         }
 
         syncParts();
+    }
+
+    void weaponSelection(){
+        if(Keyboard::isKeyPressed(Keyboard::Num1)){
+            currentWeapon=BASICLASER;
+            weapon.setString("Single Laser: --");
+        } else if (Keyboard::isKeyPressed(Keyboard::Num2)){
+            currentWeapon=DUALSHOT;
+
+            stringstream s;
+            s << "Dual Laser: " << dualAmmo;
+            weapon.setString(s.str());
+        }
+    }
+
+    void refreshAmmo(){
+        if(currentWeapon==DUALSHOT){
+            stringstream s;
+            s << "Dual Laser: " << dualAmmo;
+            weapon.setString(s.str());
+        }
     }
 };
 

@@ -52,17 +52,26 @@ int main(){
     srand(time(NULL));
     bool replay=true;
 
+    if(setting.fullscreen){
+        width=VideoMode::getDesktopMode().width;
+        height=VideoMode::getDesktopMode().height;
+    } else {
+        width=800;
+        height=640;
+    }
+
+    int exitCode=0;
     while(replay){
         Game game;
         if(!game.init()){
             return EXIT_FAILURE;
         }
 
-        game.exec();
+        exitCode=game.exec();
 
         replay=game.replay;
     }
 
 
-    //return game.exec();
+    return exitCode;
 }

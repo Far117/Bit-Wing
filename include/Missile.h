@@ -22,11 +22,15 @@ public:
     bool noSprite;
     RectangleShape placeHolder;
 
-    Missile(float x2, float y2, bool h){
+    enum missileTypes{STRAIGHT=1, LEFT=2, RIGHT=3};
+    int type;
+
+    Missile(float x2, float y2, bool h, int t){
         noSprite=true;
         x=x2;
         y=y2;
         hostile=h;
+        type=t;
         speed=1.5;
         bounds=13;
 
@@ -56,13 +60,25 @@ public:
         y=placeHolder.getPosition().y;
         if (hostile){
             if(noSprite){
-                placeHolder.move(0,speed*time.asSeconds()*60);
+                if(type==STRAIGHT){
+                    placeHolder.move(0,speed*time.asSeconds()*60);
+                } else if(type==LEFT){
+                    placeHolder.move((speed/4)*(time.asSeconds()*60)*-1,speed*time.asSeconds()*60);
+                } else if(type==RIGHT){
+                    placeHolder.move((speed/4)*(time.asSeconds()*60),speed*time.asSeconds()*60);
+                }
             } else {
                 y+=speed;
             }
         } else {
             if(noSprite){
-                placeHolder.move(0,-speed*time.asSeconds()*60);
+                if(type==STRAIGHT){
+                    placeHolder.move(0,-speed*time.asSeconds()*60);
+                } else if(type==LEFT){
+                    placeHolder.move((speed/4)*(time.asSeconds()*60)*-1,-speed*time.asSeconds()*60);
+                } else if(type==RIGHT){
+                    placeHolder.move((speed/4)*(time.asSeconds()*60),-speed*time.asSeconds()*60);
+                }
             } else {
                 y-=speed;
             }

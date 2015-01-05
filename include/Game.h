@@ -119,13 +119,13 @@ public:
 
     bool init(){
         if(setting.fullscreen){
-            width=VideoMode::getDesktopMode().width;
-            height=VideoMode::getDesktopMode().height;
+            //width=VideoMode::getDesktopMode().width;
+            //height=VideoMode::getDesktopMode().height;
             VideoMode videoMode(width, height);
             window.create(videoMode, "Bit Wing", Style::Fullscreen);
         } else {
-            width=800;
-            height=640;
+            //width=800;
+            //height=640;
             VideoMode videoMode(width,height);
             window.create(videoMode, "Bit Wing");
         }
@@ -308,7 +308,7 @@ private:
         gotoStore.setColor(Color::White);
         gotoStore.setCharacterSize(24);
         gotoStore.setString("Press S to go to the store...");
-        gotoStore.setPosition(width-gotoStore.getGlobalBounds().width,height-gotoStore.getGlobalBounds().height);
+        gotoStore.setPosition(width/2-gotoStore.getGlobalBounds().width/2,height-gotoStore.getGlobalBounds().height);
 
         explosionBuffer.loadFromFile("bin/164855__dayofdagon__bit-bomber2.ogg");
         goodLaserBuffer.loadFromFile("bin/laser.wav");
@@ -333,7 +333,7 @@ private:
         SONGS=6;
         lastPlayedSong=rand() % SONGS;
 
-        player.push_back(Player(width/2,height/2));
+        player.push_back(Player(width/2,height/2, font));
         store.link(player[0]);
         for(int x=0;x<20;x++){
             stars.push_back(Star());
@@ -466,7 +466,7 @@ private:
                     explosion.play();
 
                     if(destroyTitle){
-                        titleDestructionTimer-=75;
+                        titleDestructionTimer-=300;
                     }
                 }
             }
@@ -559,10 +559,24 @@ private:
         }
 
         if(Keyboard::isKeyPressed(Keyboard::Space) && player[0].canFire){
-            missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                player[0].parts[0].getPosition().y, false));
-            player[0].canFire=false;
-            goodLaser.play();
+            if(player[0].currentWeapon==1){ //single shot
+                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
+                                    player[0].parts[0].getPosition().y, false,1));
+
+                goodLaser.play();
+                player[0].canFire=false;
+            }else if(player[0].currentWeapon==2 && player[0].dualAmmo>0){ //double shot
+                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
+                                    player[0].parts[0].getPosition().y, false,2));
+                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
+                                    player[0].parts[0].getPosition().y, false,3));
+
+                player[0].dualAmmo--;
+
+                goodLaser.play();
+                player[0].canFire=false;
+            }
+
         }
     }
 
@@ -678,11 +692,11 @@ private:
                 if(enemies[x].shouldFire()){
                     if(enemies[x].noSprite){
                         missiles.push_back(Missile(enemies[x].placeHolder.getPosition().x+15-5,
-                                                   enemies[x].placeHolder.getPosition().y+30,true));
+                                                   enemies[x].placeHolder.getPosition().y+30,true,1));
                         badLaser.play();
                     } else {
                         missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
-                                                       enemies[x].parts[0].getPosition().y+15,true));
+                                                       enemies[x].parts[0].getPosition().y+15,true,1));
                         badLaser.play();
                     }
                 }

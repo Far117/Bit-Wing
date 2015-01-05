@@ -20,6 +20,7 @@ public:
     Text title;
     Text life;
     Text exitStore;
+    Text dual;
     bool quit;
 
 
