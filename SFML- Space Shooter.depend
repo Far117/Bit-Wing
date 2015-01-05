@@ -75,7 +75,7 @@
 1418091572 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\player.cpp
 	"Player.h"
 
-1420420459 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
+1420424808 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -83,7 +83,7 @@
 	<cstdlib>
 	<sstream>
 
-1420420267 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
+1420500357 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -135,7 +135,7 @@
 	<iostream>
 	<sstream>
 
-1420420267 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\store.cpp
+1420424891 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\store.cpp
 	"Store.h"
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
@@ -143,7 +143,7 @@
 	<SFML/Audio.hpp>
 	"Player.h"
 
-1420419935 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\store.h
+1420500382 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\store.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>

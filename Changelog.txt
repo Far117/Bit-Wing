@@ -1,7 +1,9 @@
 Beta 3:
     New weapons system
-    New weapons
+    New weapons:
         -Dual Laser
+        -Tri Laser
+        -Shield Purge
 
 Beta 2:
     Configuration file

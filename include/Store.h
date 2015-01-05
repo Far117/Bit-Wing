@@ -21,13 +21,19 @@ public:
     Text life;
     Text exitStore;
     Text dual;
+    Text tri;
+    Text shieldPurge;
+
     bool quit;
+
+    bool canBuy;
+    int buyDelay;
 
 
     Store();
     //~Store();
 
-    void logic(RenderWindow &window);
+    void logic(RenderWindow &, int);
     void link(Player &);
     void init();
 };

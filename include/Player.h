@@ -16,6 +16,11 @@ extern int width;
 extern int height;
 extern const bool keyboardControl;
 
+//make weapon info follow player
+//rapid fire
+//low damage gun $100
+//shield purge
+
 class Player{
 public:
 
@@ -37,6 +42,8 @@ public:
     int kills;
 
     int dualAmmo;
+    int triAmmo;
+    int shieldAmmo;
 
     RectangleShape placeHolder;
 
@@ -58,7 +65,7 @@ public:
     enum accessoryNames{RIGHTTHRUST=0,LEFTTHRUST=1, COCKPIT=2};
     enum hudNames{TOPHUD=0, CLEAREDHUD=1, WEAPONHUD=2};
 
-    enum weaponChoices{BASICLASER=1, DUALSHOT=2, TRISHOT=3};
+    enum weaponChoices{BASICLASER=1, DUALSHOT=2, TRISHOT=3, SHIELDPURGE=4};
     int currentWeapon;
 
     vector<RectangleShape> parts;
@@ -84,6 +91,8 @@ public:
         flameGrow=false;
 
         dualAmmo=0;
+        triAmmo=0;
+        shieldAmmo=0;
 
         weapon.setFont(font);
         weapon.setCharacterSize(20);
@@ -242,6 +251,7 @@ public:
         }
 
         refreshAmmo();
+
         window.draw(weapon);
     }
 
@@ -301,6 +311,18 @@ public:
             stringstream s;
             s << "Dual Laser: " << dualAmmo;
             weapon.setString(s.str());
+        } else if(Keyboard::isKeyPressed(Keyboard::Num3)){
+            currentWeapon=TRISHOT;
+
+            stringstream s;
+            s << "Triple Laser: " << triAmmo;
+            weapon.setString(s.str());
+        } else if(Keyboard::isKeyPressed(Keyboard::Num4)){
+            currentWeapon=SHIELDPURGE;
+
+            stringstream s;
+            s << "Shield Purge: " << shieldAmmo;
+            weapon.setString(s.str());
         }
     }
 
@@ -308,6 +330,14 @@ public:
         if(currentWeapon==DUALSHOT){
             stringstream s;
             s << "Dual Laser: " << dualAmmo;
+            weapon.setString(s.str());
+        } else if(currentWeapon==TRISHOT){
+            stringstream s;
+            s << "Triple Laser: " << triAmmo;
+            weapon.setString(s.str());
+        }else if(currentWeapon==SHIELDPURGE){
+            stringstream s;
+            s << "Shield Purge: " << shieldAmmo;
             weapon.setString(s.str());
         }
     }

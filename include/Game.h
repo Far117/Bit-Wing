@@ -428,7 +428,7 @@ private:
         }
 
         if(gameState==STORE){
-            store.logic(window);
+            store.logic(window, level);
             if(store.quit){
                 store.quit=false;
                 level_up();
@@ -575,8 +575,30 @@ private:
 
                 goodLaser.play();
                 player[0].canFire=false;
-            }
+            } else if(player[0].currentWeapon==3 && player[0].triAmmo>0){
+                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
+                                    player[0].parts[0].getPosition().y, false,2));
+                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
+                                    player[0].parts[0].getPosition().y, false,3));
+                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
+                                    player[0].parts[0].getPosition().y, false,1));
 
+                player[0].triAmmo--;
+
+                goodLaser.play();
+                player[0].canFire=false;
+            } else if(player[0].currentWeapon==4 && player[0].shieldAmmo>0){
+                int maxX=player[0].parts[0].getPosition().x+45;
+                int startY=player[0].parts[0].getPosition().y-15;
+                for(int x=player[0].parts[0].getPosition().x-45; x<maxX;x+=15){
+                    missiles.push_back(Missile(x,startY,false,1));
+                }
+
+                player[0].shieldAmmo--;
+
+                goodLaser.play();
+                player[0].canFire=false;
+            }
         }
     }
 
