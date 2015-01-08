@@ -202,6 +202,7 @@ private:
         }
 
         if(enemiesLeft<=0 && gameState==PLAYING){
+            player[0].sectorClearedPop(level);
             gameState=PRESTORE;
             //level_up();
         }
@@ -381,7 +382,7 @@ private:
             player[0].drawHuds(window);
         }
 
-        if(gameState==PLAYING || gameState==STORE){
+        if(/*gameState==PLAYING ||*/ gameState==STORE){
             stringstream s;
             s << "$" << player[0].money;
             money.setString(s.str());
@@ -414,13 +415,13 @@ private:
             s << "Enemies Killed: " << player[0].kills;
             killCount.setString(s.str());
 
-            window.draw(levelCounter);
-            window.draw(enemyCounter);
-            window.draw(sectorCounter);
-            window.draw(killCount);
+            //window.draw(levelCounter);
+            //window.draw(enemyCounter);
+            //window.draw(sectorCounter);
+            //window.draw(killCount);
         }
 
-        if(gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST || gameState==STORE){
+        if(/*gameState==PLAYING || gameState==LEVEL || gameState==GAME_LOST || */gameState==STORE){
             stringstream s;
             s << "Lives: " << player[0].lives;
             lives.setString(s.str());
@@ -481,6 +482,7 @@ private:
                                                             player[0].parts[p].getPosition().y));
                         }
                         player[0].lives--;
+                        player[0].deathPop();
                         player[0].resetPosition();
                         missiles.erase(missiles.begin()+m);
                         explosion.play();
@@ -500,18 +502,31 @@ private:
             } else {
                 for(int e=0;e<enemies.size();e++){
                     for(int p=0;p<enemies[e].parts.size();p++){
-                        if(intersects(missiles[m].placeHolder,enemies[e].parts[p])){
+                        if(intersects(missiles[m].placeHolder,enemies[e].parts[p]) && enemies[e].shields<=0){
                             if(setting.explosions){
                                 explosions.push_back(Explosion(enemies[e].parts[p].getPosition().x,
                                                                enemies[e].parts[p].getPosition().y));
                             }
-                            missiles.erase(missiles.begin()+m);
-                            enemies.erase(enemies.begin()+e);
-                            enemiesLeft--;
                             player[0].money+=100;
                             player[0].kills++;
+                            player[0].moneyPop(enemies[e].parts[p].getPosition().x,enemies[e].parts[p].getPosition().y);
+                            player[0].killPop();
+
+                            enemiesLeft--;
+                            player[0].enemiesRemainingPop(enemies[e].parts[p].getPosition().x,
+                                                          enemies[e].parts[p].getPosition().y+25,
+                                                          enemiesLeft);
+
+                            missiles.erase(missiles.begin()+m);
+                            enemies.erase(enemies.begin()+e);
+
+
                             explosion.play();
                             break;
+                        } else if(intersects(missiles[m].placeHolder,enemies[e].parts[p])){
+                            enemies[e].hit();
+                            missiles.erase(missiles.begin()+m);
+                            //insert dull metal hit sound
                         }
                     }
                 }
@@ -529,8 +544,10 @@ private:
                                                             enemies[e].parts[ep].getPosition().y));
                         }
                         player[0].lives--;
+                        player[0].deathPop();
                         player[0].resetPosition();
                         //enemies[x].kill=true;
+
                         enemies.erase(enemies.begin()+e);
                         enemiesLeft--;
                         explosion.play();
@@ -560,28 +577,41 @@ private:
 
         if(Keyboard::isKeyPressed(Keyboard::Space) && player[0].canFire){
             if(player[0].currentWeapon==1){ //single shot
-                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                    player[0].parts[0].getPosition().y, false,1));
+                for(int x=0;x<player[0].laserStrength;x++){
+                    missiles.push_back(Missile(player[0].parts[0].getPosition().x+
+                                               (player[0].parts[0].getGlobalBounds().width/2)-5,
+                                        player[0].parts[0].getPosition().y, false,1));
+                }
 
                 goodLaser.play();
                 player[0].canFire=false;
             }else if(player[0].currentWeapon==2 && player[0].dualAmmo>0){ //double shot
-                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                    player[0].parts[0].getPosition().y, false,2));
-                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                    player[0].parts[0].getPosition().y, false,3));
+                for(int x=0;x<player[0].laserStrength;x++){
+                    missiles.push_back(Missile(player[0].parts[0].getPosition().x+
+                                               (player[0].parts[0].getGlobalBounds().width/2)-5,
+                                        player[0].parts[0].getPosition().y, false,2));
+                    missiles.push_back(Missile(player[0].parts[0].getPosition().x+
+                                               (player[0].parts[0].getGlobalBounds().width/2)-5,
+                                        player[0].parts[0].getPosition().y, false,3));
+                }
 
                 player[0].dualAmmo--;
 
                 goodLaser.play();
                 player[0].canFire=false;
             } else if(player[0].currentWeapon==3 && player[0].triAmmo>0){
-                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                    player[0].parts[0].getPosition().y, false,2));
-                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                    player[0].parts[0].getPosition().y, false,3));
-                missiles.push_back(Missile(player[0].parts[0].getPosition().x+(player[0].parts[0].getGlobalBounds().width/2)-5,
-                                    player[0].parts[0].getPosition().y, false,1));
+
+                for(int x=0;x<player[0].laserStrength;x++){
+                    missiles.push_back(Missile(player[0].parts[0].getPosition().x+
+                                               (player[0].parts[0].getGlobalBounds().width/2)-5,
+                                        player[0].parts[0].getPosition().y, false,2));
+                    missiles.push_back(Missile(player[0].parts[0].getPosition().x+
+                                               (player[0].parts[0].getGlobalBounds().width/2)-5,
+                                        player[0].parts[0].getPosition().y, false,3));
+                    missiles.push_back(Missile(player[0].parts[0].getPosition().x+
+                                               (player[0].parts[0].getGlobalBounds().width/2)-5,
+                                        player[0].parts[0].getPosition().y, false,1));
+                }
 
                 player[0].triAmmo--;
 
@@ -590,8 +620,11 @@ private:
             } else if(player[0].currentWeapon==4 && player[0].shieldAmmo>0){
                 int maxX=player[0].parts[0].getPosition().x+45;
                 int startY=player[0].parts[0].getPosition().y-15;
-                for(int x=player[0].parts[0].getPosition().x-45; x<maxX;x+=15){
-                    missiles.push_back(Missile(x,startY,false,1));
+
+                for(int y=0;y<player[0].laserStrength;y++){
+                    for(int x=player[0].parts[0].getPosition().x-45; x<maxX;x+=15){
+                        missiles.push_back(Missile(x,startY,false,1));
+                    }
                 }
 
                 player[0].shieldAmmo--;
@@ -605,7 +638,7 @@ private:
     void spawnEnemies(){
         if(level<=2){
             if(enemies.size()<level && spawnsLeft>0){
-                enemies.push_back( Enemy((rand() % (width-30))+30,0,1));
+                enemies.push_back( Enemy((rand() % (width-30))+30,0,1, level));
                 spawnsLeft--;
             }
         }else{
@@ -620,7 +653,7 @@ private:
                 }
 
                 for(int x=0;x<3;x++){
-                    enemies.push_back( Enemy((float)lineStart,0,type));
+                    enemies.push_back( Enemy((float)lineStart,0,type, level));
                     lineStart+=45;
                     spawnsLeft--;
                 }
@@ -635,7 +668,7 @@ private:
                 }
 
                 for(int x=0;x<6;x++){
-                    enemies.push_back( Enemy((float)lineStart,0,type));
+                    enemies.push_back( Enemy((float)lineStart,0,type, level));
                     lineStart+=45;
                     spawnsLeft--;
                 }
@@ -652,7 +685,7 @@ private:
 
                 for(int y=30*4; y>0;y-=45){
                     for(int x=0;x<3;x++){
-                        enemies.push_back( Enemy((float)lineStart,(float) y,type));
+                        enemies.push_back( Enemy((float)lineStart,(float) y,type, level));
                         lineStart+=45;
                         spawnsLeft--;
                     }
@@ -662,13 +695,13 @@ private:
             } else if(enemies.size()<(level*level+(rand() % level*2))-(level/2) && spawnsLeft>0){
 
                 if(rand() % 3==0){ //spawn weavers
-                    enemies.push_back( Enemy((rand() % (width-30))+30,0,2));
+                    enemies.push_back( Enemy((rand() % (width-30))+30,0,2, level));
                     spawnsLeft--;
                 } else if(rand() % 5==0){ //spawn strafers
-                    enemies.push_back( Enemy((rand() % (width-30))+30,0,3));
+                    enemies.push_back( Enemy((rand() % (width-30))+30,0,3, level));
                     spawnsLeft--;
                 } else {
-                    enemies.push_back( Enemy((rand() % (width-30))+30,0,1));
+                    enemies.push_back( Enemy((rand() % (width-30))+30,0,1, level));
                     spawnsLeft--;
                 }
             }
@@ -717,8 +750,32 @@ private:
                                                    enemies[x].placeHolder.getPosition().y+30,true,1));
                         badLaser.play();
                     } else {
-                        missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
-                                                       enemies[x].parts[0].getPosition().y+15,true,1));
+                        if(enemies[x].fireType==1){
+                            missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
+                                                           enemies[x].parts[0].getPosition().y+15,true,1));
+                        } else if(enemies[x].fireType==2){
+                            missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
+                                                           enemies[x].parts[0].getPosition().y+15,true,2));
+                            missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
+                                                           enemies[x].parts[0].getPosition().y+15,true,3));
+                        } else if(enemies[x].fireType==3){
+                            missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
+                                                           enemies[x].parts[0].getPosition().y+15,true,1));
+                            missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
+                                                           enemies[x].parts[0].getPosition().y+15,true,2));
+                            missiles.push_back(Missile(enemies[x].parts[0].getPosition().x+10-5,
+                                                           enemies[x].parts[0].getPosition().y+15,true,3));
+                        } else if(enemies[x].fireType==4){
+                            int startX=enemies[x].parts[0].getPosition().x-45;
+                            int startY=enemies[x].parts[0].getPosition().y;
+
+                            int maxX=enemies[x].parts[0].getPosition().x+45;
+
+                            for(int m=startX;m<maxX;m+=15){
+                                missiles.push_back(Missile(m,startY,true,1));
+                            }
+                        }
+
                         badLaser.play();
                     }
                 }

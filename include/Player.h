@@ -9,6 +9,8 @@
 #include <cstdlib>
 #include <sstream>
 
+#include <TextEntity.h>
+
 using namespace sf;
 using namespace std;
 
@@ -19,7 +21,6 @@ extern const bool keyboardControl;
 //make weapon info follow player
 //rapid fire
 //low damage gun $100
-//shield purge
 
 class Player{
 public:
@@ -44,6 +45,8 @@ public:
     int dualAmmo;
     int triAmmo;
     int shieldAmmo;
+
+    int laserStrength;
 
     RectangleShape placeHolder;
 
@@ -72,6 +75,8 @@ public:
     vector<RectangleShape> accessories;
     vector<RectangleShape> huds;
 
+    vector<TextEntity> textEntities;
+
     Player(float x2, float y2, Font &font){
         x=x2;
         y=y2;
@@ -94,11 +99,13 @@ public:
         triAmmo=0;
         shieldAmmo=0;
 
+        laserStrength=1;
+
         weapon.setFont(font);
-        weapon.setCharacterSize(20);
+        weapon.setCharacterSize(12);
         weapon.setColor(Color::White);
-        weapon.setString("Single Laser: --");
-        weapon.setPosition(width-250,height-weapon.getGlobalBounds().height*1.2);
+        weapon.setString("Single Laser");
+        //weapon.setPosition(width-250,height-weapon.getGlobalBounds().height*1.2);
 
         body.setFillColor(Color(0,255,33));
         body.setOutlineColor(Color(0,127,14));
@@ -167,9 +174,9 @@ public:
         accessories.push_back(leftThrust);
         accessories.push_back(cockpit);
 
-        huds.push_back(topHUD);
-        huds.push_back(clearedHUD);
-        huds.push_back(weaponHUD);
+        //huds.push_back(topHUD);
+        //huds.push_back(clearedHUD);
+        //huds.push_back(weaponHUD);
 
         //0=body
         //1=rightWing
@@ -204,15 +211,15 @@ public:
                 y2=-speed;
             }
 
-            if((Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::D)) &&
+            if((Keyboard::isKeyPressed(Keyboard::Down) || Keyboard::isKeyPressed(Keyboard::S)) &&
                     accessories[LEFTTHRUST].getPosition().y+accessories[LEFTTHRUST].getGlobalBounds().height<height){
                 y2=speed;
             }
-            if((Keyboard::isKeyPressed(Keyboard::D) || Keyboard::isKeyPressed(Keyboard::Right))
+            if((Keyboard::isKeyPressed(Keyboard::Right) || Keyboard::isKeyPressed(Keyboard::D))
                && parts[RIGHTWING].getPosition().x+parts[RIGHTWING].getGlobalBounds().width<width){
                 //if (noSprite){placeHolder.move(Vector2f(speed,0));}
                 x2=speed;
-            } else if ((Keyboard::isKeyPressed(Keyboard::A) || Keyboard::isKeyPressed(Keyboard::Left))
+            } else if ((Keyboard::isKeyPressed(Keyboard::Left) || Keyboard::isKeyPressed(Keyboard::A))
                        && parts[LEFTWING].getPosition().x>0){
                 //if (noSprite){placeHolder.move(Vector2f(-speed,0));}
                 x2=-speed;
@@ -241,6 +248,14 @@ public:
 
             for(int x=0;x<accessories.size();x++){
                 window.draw(accessories[x]);
+            }
+        }
+
+        for(int loop=0;loop<textEntities.size();loop++){
+            textEntities[loop].draw(window);
+            if(textEntities[loop].timer<=0){
+                textEntities.erase(textEntities.begin()+loop);
+                break;
             }
         }
     }
@@ -276,6 +291,14 @@ public:
                                         parts[RIGHTWING].getPosition().y+parts[LEFTWING].getGlobalBounds().height));
         accessories[COCKPIT].setPosition(parts[BODY].getPosition().x+(bounds/15),
                                          parts[BODY].getPosition().y+(bounds/20));
+
+        if(parts[BODY].getPosition().x-(parts[BODY].getGlobalBounds().width/2)<width/2){
+            weapon.setPosition(parts[BODY].getPosition().x+parts[BODY].getGlobalBounds().width+20,
+                               parts[BODY].getPosition().y);
+        } else {
+            weapon.setPosition(parts[BODY].getPosition().x-20-weapon.getGlobalBounds().width,
+                               parts[BODY].getPosition().y);
+        }
     }
 
     void animate(){
@@ -304,24 +327,24 @@ public:
     void weaponSelection(){
         if(Keyboard::isKeyPressed(Keyboard::Num1)){
             currentWeapon=BASICLASER;
-            weapon.setString("Single Laser: --");
+            weapon.setString("Single Laser");
         } else if (Keyboard::isKeyPressed(Keyboard::Num2)){
             currentWeapon=DUALSHOT;
 
             stringstream s;
-            s << "Dual Laser: " << dualAmmo;
+            s << "Dual Laser\n" << dualAmmo;
             weapon.setString(s.str());
         } else if(Keyboard::isKeyPressed(Keyboard::Num3)){
             currentWeapon=TRISHOT;
 
             stringstream s;
-            s << "Triple Laser: " << triAmmo;
+            s << "Triple Laser\n" << triAmmo;
             weapon.setString(s.str());
         } else if(Keyboard::isKeyPressed(Keyboard::Num4)){
             currentWeapon=SHIELDPURGE;
 
             stringstream s;
-            s << "Shield Purge: " << shieldAmmo;
+            s << "Shield Purge\n" << shieldAmmo;
             weapon.setString(s.str());
         }
     }
@@ -329,17 +352,55 @@ public:
     void refreshAmmo(){
         if(currentWeapon==DUALSHOT){
             stringstream s;
-            s << "Dual Laser: " << dualAmmo;
+            s << "Dual Laser\n" << dualAmmo;
             weapon.setString(s.str());
         } else if(currentWeapon==TRISHOT){
             stringstream s;
-            s << "Triple Laser: " << triAmmo;
+            s << "Triple Laser\n" << triAmmo;
             weapon.setString(s.str());
         }else if(currentWeapon==SHIELDPURGE){
             stringstream s;
-            s << "Shield Purge: " << shieldAmmo;
+            s << "Shield Purge\n" << shieldAmmo;
             weapon.setString(s.str());
         }
+    }
+
+    void moneyPop(float enemyX, float enemyY){
+        stringstream s;
+        s << "$" << money;
+        textEntities.push_back(TextEntity(enemyX,enemyY,16,s.str(),Color::Green,60*2));
+    }
+
+    void killPop(){
+        stringstream s;
+        s << "Kills: " << kills;
+
+        textEntities.push_back(TextEntity(parts[BODY].getPosition().x,
+                                         parts[BODY].getPosition().y-20,
+                                         16,s.str(),Color::Red,60*1));
+    }
+
+    void deathPop(){
+        stringstream s;
+        s << "Ships Left: " << lives;
+
+        textEntities.push_back(TextEntity(parts[BODY].getPosition().x,
+                                         parts[BODY].getPosition().y,
+                                         16,s.str(),Color::Yellow,60*3));
+    }
+
+    void enemiesRemainingPop(float enemyX, float enemyY, int remaining){
+        stringstream s;
+        s << remaining << " enemies left";
+
+        textEntities.push_back(TextEntity(enemyX,enemyY,16,s.str(),Color::Red,60*1));
+    }
+
+    void sectorClearedPop(int sectorsCleared){
+        stringstream s;
+        s << sectorsCleared << " Sectors Cleared";
+
+        textEntities.push_back(TextEntity(width/3,height/2,50,s.str(),Color::Yellow,60*2));
     }
 };
 

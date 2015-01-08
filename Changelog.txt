@@ -1,3 +1,10 @@
+Beta 4:
+    Enemy shields
+    Enemies now utilize all available weapons
+    WASD Control
+    Laser Strength
+    Redesigned UI
+
 Beta 3:
     New weapons system
     New weapons:

@@ -22,10 +22,10 @@ Store::Store(){
     title.setColor(Color::White);
     title.setCharacterSize(32);
 
-    life.setString("New [L]ife: $10,000");
-    life.setFont(font);
-    life.setColor(Color::White);
-    life.setCharacterSize(28);
+    weapons.setFont(font);
+    weapons.setColor(Color::White);
+    weapons.setCharacterSize(30);
+    weapons.setString("Weapons:");
 
     dual.setString("[D]ual Laser Ammo: $25");
     dual.setFont(font);
@@ -41,6 +41,21 @@ Store::Store(){
     shieldPurge.setFont(font);
     shieldPurge.setColor(Color::White);
     shieldPurge.setCharacterSize(28);
+
+    powers.setFont(font);
+    powers.setColor(Color::White);
+    powers.setCharacterSize(30);
+    powers.setString("Upgrades:");
+
+    life.setString("New [L]ife: $10,000");
+    life.setFont(font);
+    life.setColor(Color::White);
+    life.setCharacterSize(28);
+
+    laserPower.setFont(font);
+    laserPower.setString("[I]ncrease Laser Penetration: $7,500");
+    laserPower.setColor(Color::White);
+    laserPower.setCharacterSize(28);
 
     exitStore.setFont(font);
     exitStore.setString("[Q]uit");
@@ -58,6 +73,8 @@ Store::~Store(){
 
 void Store::logic(RenderWindow &window, int level){
     window.draw(title);
+    window.draw(weapons);
+    window.draw(powers);
     window.draw(life);
     window.draw(exitStore);
 
@@ -67,6 +84,7 @@ void Store::logic(RenderWindow &window, int level){
 
     if(level>=3){
         window.draw(tri);
+        window.draw(laserPower);
     }
 
     if(level>=5){
@@ -101,6 +119,13 @@ void Store::logic(RenderWindow &window, int level){
         canBuy=false;
     }
 
+    if(Keyboard::isKeyPressed(Keyboard::I) && p->money>=7500 && canBuy && level>=3){
+        p->money-=7500;
+        p->laserStrength++;
+
+        canBuy=false;
+    }
+
     if(Keyboard::isKeyPressed(Keyboard::Q)){
         quit=true;
     }
@@ -121,11 +146,19 @@ void Store::link(Player &player){
 }
 
 void Store::init(){
-    title.setPosition(width/2-(title.getGlobalBounds().width/2), title.getGlobalBounds().height);
-    life.setPosition(width/2-(life.getGlobalBounds().width/2), height/10+life.getGlobalBounds().height);
-    dual.setPosition(width/2-dual.getGlobalBounds().width/2,height/10+dual.getGlobalBounds().height*2);
-    tri.setPosition(width/2-tri.getGlobalBounds().width/2,height/10+tri.getGlobalBounds().height*3);
-    shieldPurge.setPosition(width/2-shieldPurge.getGlobalBounds().width/2,height/10+shieldPurge.getGlobalBounds().height*4);
-    exitStore.setPosition(width/2-(exitStore.getGlobalBounds().width/2),height/10+exitStore.getGlobalBounds().height*5);
+    title.setPosition(width/2-title.getGlobalBounds().width/2, title.getGlobalBounds().height);
+
+    weapons.setPosition(width/4-weapons.getGlobalBounds().width/2, height/10+weapons.getGlobalBounds().height);
+
+    dual.setPosition(width/4-dual.getGlobalBounds().width/2,height/10+dual.getGlobalBounds().height*3);
+    tri.setPosition(width/4-tri.getGlobalBounds().width/2,height/10+tri.getGlobalBounds().height*4);
+    shieldPurge.setPosition(width/4-shieldPurge.getGlobalBounds().width/2,height/10+shieldPurge.getGlobalBounds().height*5);
+
+    powers.setPosition(width*3/4-powers.getGlobalBounds().width/2,height/10+powers.getGlobalBounds().height);
+
+    life.setPosition(width*3/4-life.getGlobalBounds().width/2, height/10+life.getGlobalBounds().height*3);
+    laserPower.setPosition(width*3/4-laserPower.getGlobalBounds().width/2,height/10+laserPower.getGlobalBounds().height*4);
+
+    exitStore.setPosition(width/2-(exitStore.getGlobalBounds().width/2),height/10+exitStore.getGlobalBounds().height*10);
     return;
 }

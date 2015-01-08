@@ -31,6 +31,8 @@ public:
     enum availableAI{CHARGER, WEAVER, STRAFER};
     int direction;
     int ai;
+    int shields;
+    int maxShields;
 
     RectangleShape placeHolder;
 
@@ -43,12 +45,15 @@ public:
 
     enum partNames{BODY=0,RIGHTWING=1, LEFTWING=2};
     enum accessoryNames{RIGHTTHRUST=0, LEFTTHRUST=1, COCKPIT=2};
+    enum fireTypes{SINGLE=1,DUAL=2,TRI=3,PURGE=4};
+    int fireType;
+
     float outlineSize;
 
     vector<RectangleShape> parts;
     vector<RectangleShape> accessories;
 
-    Enemy(float x2, float y2, int type){
+    Enemy(float x2, float y2, int type, int level){
         x=x2;
         y=y2;
 
@@ -61,6 +66,56 @@ public:
         flameAnimationTimer=10;
 
         outlineSize=2;
+
+        int chance=0;
+        bool getsShield=false;
+
+        if(level>=3){
+            if(level<10){
+                chance=level;
+
+                if((rand()%10)+1>=chance){
+                    getsShield=true;
+                }
+            }else{
+                getsShield=true;
+            }
+        }
+
+        fireType=SINGLE;
+
+        if(level>=3 && level<10){
+            if(rand()%(10-level)==0){
+                fireType=DUAL;
+            }
+        }else if(level>=3 && rand()%9==0){
+            fireType=DUAL;
+        }
+
+        if(level>=5 && level<12){
+            if(rand()%(12-level)==0){
+                fireType=TRI;
+            }
+        } else if(level>=5 && rand()%9==0){
+            fireType==TRI;
+        }
+
+        if(level>=7 && level<14){
+            if(rand()%(14-level)==0){
+                fireType=PURGE;
+            }
+        } else if (level>=7 && rand()%9==0){
+            fireType=PURGE;
+        }
+
+        if(getsShield){
+            shields=rand() % (int)((level/3)+1);
+        } else {
+            shields=0;
+        }
+
+        maxShields=shields;
+
 
         switch(type){
             case 1:
@@ -117,6 +172,13 @@ public:
             cockpit.setSize(Vector2f(bounds-outlineSize*4,bounds/4));
             cockpit.setPosition(body.getPosition().x+bounds/15,
                                 body.getPosition().y-bounds/20);
+
+
+            if(shields>0){
+                body.setOutlineColor(Color::White);
+                leftWing.setOutlineColor(Color::White);
+                rightWing.setOutlineColor(Color::White);
+            }
 
             parts.push_back(body);
             parts.push_back(rightWing);
@@ -251,6 +313,27 @@ public:
         }
 
         syncParts();
+    }
+
+    void hit(){
+        shields--;
+
+        if(shields>0){
+            parts[BODY].setOutlineColor(Color(155*shields/maxShields+100,
+                                              155*shields/maxShields+100,
+                                              155*shields/maxShields+100));
+            parts[LEFTWING].setOutlineColor(Color(155*shields/maxShields+100,
+                                                  155*shields/maxShields+100,
+                                                  155*shields/maxShields+100));
+            parts[RIGHTWING].setOutlineColor(Color(155*shields/maxShields+100,
+                                                   155*shields/maxShields+100,
+                                                   155*shields/maxShields+100));
+        } else {
+            parts[BODY].setOutlineColor(Color::Black);
+            parts[LEFTWING].setOutlineColor(Color::Black);
+            parts[RIGHTWING].setOutlineColor(Color::Black);
+        }
+
     }
 };
 

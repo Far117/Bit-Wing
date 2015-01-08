@@ -24,6 +24,10 @@ public:
     Text tri;
     Text shieldPurge;
 
+    Text weapons;
+    Text powers;
+    Text laserPower;
+
     bool quit;
 
     bool canBuy;

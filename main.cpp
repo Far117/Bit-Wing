@@ -21,6 +21,8 @@ Settings setting;
 //const int width=VideoMode::getDesktopMode().width, height=VideoMode::getDesktopMode().height;
 const bool keyboardControl=true;
 
+Font font;
+
 bool intersects (const RectangleShape &rect1,const RectangleShape &rect2){
     FloatRect r1=rect1.getGlobalBounds();
     FloatRect r2=rect2.getGlobalBounds();
@@ -51,6 +53,8 @@ string randomSector(){
 int main(){
     srand(time(NULL));
     bool replay=true;
+
+    font.loadFromFile("bin/LCD_Solid.ttf");
 
     if(setting.fullscreen){
         width=VideoMode::getDesktopMode().width;

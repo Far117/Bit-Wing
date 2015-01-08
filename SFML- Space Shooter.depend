@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1420222329 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
+1420678116 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\main.cpp
 	<iostream>
 	<cstdlib>
 	<ctime>
@@ -64,7 +64,7 @@
 1418091404 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\enemy.cpp
 	"Enemy.h"
 
-1419113954 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
+1420757747 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\enemy.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -75,15 +75,16 @@
 1418091572 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\player.cpp
 	"Player.h"
 
-1420424808 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
+1420758350 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\player.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 	<cstdlib>
 	<sstream>
+	<TextEntity.h>
 
-1420500357 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
+1420758102 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\game.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -114,7 +115,7 @@
 	<SFML/System.hpp>
 	<SFML/Audio.hpp>
 
-1418170572 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\textentity.h
+1420678116 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\textentity.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
@@ -135,7 +136,7 @@
 	<iostream>
 	<sstream>
 
-1420424891 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\store.cpp
+1420672562 source:c:\users\frank\dropbox\programs\c++\sfml- space shooter\src\store.cpp
 	"Store.h"
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
@@ -143,7 +144,7 @@
 	<SFML/Audio.hpp>
 	"Player.h"
 
-1420500382 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\store.h
+1420672164 c:\users\frank\dropbox\programs\c++\sfml- space shooter\include\store.h
 	<SFML/Window.hpp>
 	<SFML/Graphics.hpp>
 	<SFML/System.hpp>
